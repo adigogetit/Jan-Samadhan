@@ -1,0 +1,13 @@
+text,true_cat,pred_cat,cat_ok,true_pri,pred_pri,pri_ok
+Crop insurance claim has not been processed in Haryana for 8 months leaving flood affected farmers in debt,Agriculture,Agriculture,True,High,High,True
+Veterinary doctor is absent from the government animal hospital in UP for the last 3 weeks,Agriculture,Hospital,False,Medium,High,False
+Blood bank at district hospital in Assam has run out of supply and surgeries are being delayed,Hospital,Hospital,True,Critical,Medium,False
+No ophthalmologist is available at the government eye hospital in Telangana,Hospital,Hospital,True,High,High,True
+Students in Uttarakhand have not received free textbooks even though the session started 3 months ago,School,School,True,High,High,True
+Principal of government school in Haryana is forcing students to do construction work instead of studies,School,School,True,High,High,True
+Road connecting tribal village to main town in Maharashtra has been washed away in monsoon with no rebuilding,Roads,Roads,True,Critical,High,False
+Streetlight maintenance budget in Telangana was sanctioned but no work has been done in 6 months,Roads,Roads,True,Medium,High,False
+Hand pump installed under government scheme in Jharkhand is non-functional and has been for a year,Water,Water Supply,False,High,High,True
+Water treatment plant in Assam is non-operational and raw river water is being supplied to residents,Water,Welfare,False,Critical,High,False
+Power supply to a tribal hamlet in Chhattisgarh is cut off for two months without explanation,Electricity,Electricity,True,High,High,True
+Electricity department in Gujarat failed to respond to a complaint about meter tampering for 4 months,Electricity,Electricity,True,Medium,Medium,True

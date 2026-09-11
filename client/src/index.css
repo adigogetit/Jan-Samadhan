@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+/* =========================================================
+   JAN-SAMADHAN — CENTRAL THEME
+   ========================================================= */
+
+:root {
+  /* ONE MAIN BRAND COLOR */
+  --brand-blue: #0a548c;
+
+  /* BASIC COLORS */
+  --brand-white: #ffffff;
+  --brand-text: #070808;
+  --brand-gray: #393b3f;
+  --brand-border: #979ca1;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* =========================================================
+   TAILWIND TOKENS
+   ========================================================= */
+
+@theme inline {
+  --color-primary: var(--brand-blue);
+
+  --color-background: var(--brand-white);
+  --color-surface: var(--brand-white);
+  --color-surface-muted: var(--brand-white);
+
+  --color-text: var(--brand-text);
+  --color-text-secondary: var(--brand-gray);
+  --color-text-muted: var(--brand-gray);
+
+  --color-border: var(--brand-border);
+  --color-border-light: var(--brand-border);
+}
+
+/* ============================================================
+   DASHBOARD / LANDING SCROLLBAR
+   ============================================================ */
+
+.dashboard-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.dashboard-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dashboard-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dashboard-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.dashboard-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+
+  background: var(--brand-white);
+  color: var(--brand-text);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--brand-blue);
+  color: white;
+}

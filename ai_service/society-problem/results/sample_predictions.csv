@@ -1,0 +1,16 @@
+text,lang,pred_category,pred_priority
+खेत में पानी नहीं आ रहा है।,[HI],Agriculture,High
+सिंचाई के लिए पर्याप्त पानी उपलब्ध नहीं है।,[HI],Agriculture,High
+फसल में कीड़े लग गए हैं।,[HI],Agriculture,High
+फसल की पत्तियाँ पीली पड़ रही हैं।,[HI],Agriculture,Medium
+बारिश कम होने के कारण फसल सूख रही है।,[HI],Agriculture,High
+बारिश ज्यादा होने से खेत में पानी भर गया है।,[HI],Water Supply,Critical
+खाद डालने के बाद भी फसल की अच्छी वृद्धि नहीं हो रही है।,[HI],Agriculture,Medium
+फसल में बीमारी फैल रही है।,[HI],Agriculture,High
+ट्रैक्टर या कृषि मशीन खराब हो गई है।,[HI],Agriculture,High
+बिजली नहीं आने के कारण मोटर नहीं चल रही है।,[HI],Electricity,High
+नहर में पानी नहीं आ रहा है।,[HI],Water Supply,High
+फसल का उत्पादन उम्मीद से कम हो रहा है।,[HI],Agriculture,Medium
+मंडी में फसल का उचित दाम नहीं मिल रहा है।,[HI],Agriculture,High
+बीज की गुणवत्ता अच्छी नहीं है।,[HI],Agriculture,Medium
+खेत की मिट्टी बहुत सूखी हो गई है।,[HI],Agriculture,High
