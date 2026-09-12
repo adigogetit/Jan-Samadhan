@@ -611,7 +611,7 @@ export default function GovernmentProblemDetails() {
       console.error("Re-run AI error:", err);
       setError(
         err?.response?.data?.message ||
-        "Unable to run AI analysis. Please ensure the Python service is running on port 8000."
+        "Unable to run AI analysis. Please ensure the university matching service is running on port 8001."
       );
     } finally {
       setAnalyzing(false);
@@ -1441,11 +1441,21 @@ export default function GovernmentProblemDetails() {
                   </p>
                 </div>
 
-                {problem.aiAnalysis?.universityMatches?.length > 0 && (
-                  <span className="self-start sm:self-auto rounded-full bg-purple-50 text-purple-700 border border-purple-200 px-3 py-1 text-xs font-bold">
-                    {problem.aiAnalysis.universityMatches.length} Matches Found
-                  </span>
-                )}
+                <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                  {problem.aiAnalysis?.universityMatches?.length > 0 && (
+                    <span className="rounded-full bg-purple-50 text-purple-700 border border-purple-200 px-3 py-1 text-xs font-bold">
+                      {problem.aiAnalysis.universityMatches.length} Matches Found
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleRerunAI}
+                    disabled={analyzing}
+                    className="rounded-lg bg-[#18352A] px-3 py-2 text-xs font-bold text-white transition hover:bg-[#2E7D5B] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {analyzing ? "Analyzing..." : "Re-run AI Analysis"}
+                  </button>
+                </div>
               </div>
 
               {/* Case 1: Government Routing Bypass */}
