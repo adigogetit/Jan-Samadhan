@@ -48,8 +48,7 @@ const roleConfig = {
     dashboard: "/student/dashboard",
     links: [
       { label: "Dashboard", path: "/student/dashboard" },
-      { label: "Projects", path: "/student/projects" },
-      { label: "My Work", path: "/student/work" },
+      { label: "My Projects", path: "/student/projects" },
     ],
   },
 
@@ -59,7 +58,7 @@ const roleConfig = {
     links: [
       { label: "Dashboard", path: "/investor/dashboard" },
       { label: "Projects", path: "/investor/projects" },
-      { label: "Interests", path: "/investor/interests" },
+      { label: "My Interests", path: "/investor/interests" },
     ],
   },
 
@@ -117,7 +116,7 @@ function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#2477B5] text-white shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-[#06a35e] text-white shadow-sm">
       <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {/* LEFT */}
@@ -166,11 +165,10 @@ function Navbar() {
                   key={link.path}
                   type="button"
                   onClick={() => handleNavigation(link.path)}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
-                    active
-                      ? "bg-white/20 text-white"
-                      : "text-white/90 hover:bg-white/10"
-                  }`}
+                  className={`rounded-lg px-3 py-2 text-sm font-medium transition ${active
+                    ? "bg-white/20 text-white"
+                    : "text-white/90 hover:bg-white/10"
+                    }`}
                 >
                   {link.path === config.dashboard && (
                     <LayoutDashboard
@@ -285,11 +283,10 @@ function Navbar() {
                   key={link.path}
                   type="button"
                   onClick={() => handleNavigation(link.path)}
-                  className={`rounded-lg px-4 py-3 text-left text-sm font-medium transition ${
-                    active
-                      ? "bg-white/20 text-white"
-                      : "text-white/90 hover:bg-white/10"
-                  }`}
+                  className={`rounded-lg px-4 py-3 text-left text-sm font-medium transition ${active
+                    ? "bg-white/20 text-white"
+                    : "text-white/90 hover:bg-white/10"
+                    }`}
                 >
                   {link.label}
                 </button>

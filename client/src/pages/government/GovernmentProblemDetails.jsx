@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../services/api";
 
@@ -33,9 +33,13 @@ const DEPARTMENT_OPTIONS = [
 ];
 
 /*
- * Department controls the category in the backend.
- * Category is NOT shown separately in the Government UI.
- */
+|--------------------------------------------------------------------------
+| DEPARTMENT -> CATEGORY
+|--------------------------------------------------------------------------
+| Category is controlled by the saved government department.
+| Category is NOT shown as a separate government control.
+*/
+
 const DEPARTMENT_CATEGORY_MAP = {
   Agriculture: "Agriculture",
   "Road & Transport": "Road & Transport",
@@ -50,21 +54,325 @@ const DEPARTMENT_CATEGORY_MAP = {
 };
 
 const getCategoryFromDepartment = (department) => {
-  return DEPARTMENT_CATEGORY_MAP[department] || "Other";
+  return (
+    DEPARTMENT_CATEGORY_MAP[department] ||
+    "Other"
+  );
 };
+
+/*
+|--------------------------------------------------------------------------
+| MEDIA HELPERS
+|--------------------------------------------------------------------------
+*/
+
+const getMediaUrl = (item) => {
+  if (!item) return "";
+
+  /*
+   * Backend may directly return a string URL.
+   */
+  if (typeof item === "string") {
+    return resolveMediaUrl(item);
+  }
+
+  /*
+   * Support different common backend field names.
+   */
+  const rawUrl =
+    item.url ||
+    item.secure_url ||
+    item.secureUrl ||
+    item.fileUrl ||
+    item.fileURL ||
+    item.file_url ||
+    item.path ||
+    item.src ||
+    item.location ||
+    item.mediaUrl ||
+    item.mediaURL ||
+    "";
+
+  return resolveMediaUrl(rawUrl);
+};
+
+const resolveMediaUrl = (rawUrl) => {
+  if (!rawUrl) return "";
+
+  const value = String(rawUrl).trim();
+
+  if (!value) return "";
+
+  /*
+   * Already a complete URL.
+   */
+  if (
+    value.startsWith("http://") ||
+    value.startsWith("https://") ||
+    value.startsWith("blob:") ||
+    value.startsWith("data:")
+  ) {
+    return value;
+  }
+
+  /*
+   * If backend returns something like:
+   *
+   * /uploads/photo.jpg
+   *
+   * use the API server's origin instead of
+   * the React/Vite frontend origin.
+   */
+  if (value.startsWith("/")) {
+    try {
+      const baseUrl =
+        api?.defaults?.baseURL ||
+        window.location.origin;
+
+      const apiOrigin = new URL(baseUrl).origin;
+
+      return `${apiOrigin}${value}`;
+    } catch {
+      return value;
+    }
+  }
+
+  /*
+   * If backend returns:
+   *
+   * uploads/photo.jpg
+   */
+  try {
+    const baseUrl =
+      api?.defaults?.baseURL ||
+      window.location.origin;
+
+    return new URL(
+      value,
+      baseUrl.endsWith("/")
+        ? baseUrl
+        : `${baseUrl}/`
+    ).toString();
+  } catch {
+    return value;
+  }
+};
+
+const getMediaType = (item) => {
+  if (!item) return "";
+
+  /*
+   * Direct string URL.
+   */
+  if (typeof item === "string") {
+    return getTypeFromUrl(item);
+  }
+
+  const rawType = String(
+    item.type ||
+      item.mimeType ||
+      item.mime_type ||
+      item.contentType ||
+      item.content_type ||
+      item.mediaType ||
+      item.media_type ||
+      ""
+  ).toLowerCase();
+
+  /*
+   * MIME types:
+   *
+   * image/jpeg
+   * image/png
+   * video/mp4
+   */
+  if (
+    rawType.startsWith("image/") ||
+    rawType === "image"
+  ) {
+    return "image";
+  }
+
+  if (
+    rawType.startsWith("video/") ||
+    rawType === "video"
+  ) {
+    return "video";
+  }
+
+  /*
+   * Fallback to URL extension.
+   */
+  return getTypeFromUrl(getMediaUrl(item));
+};
+
+const getTypeFromUrl = (url) => {
+  if (!url) return "";
+
+  const cleanUrl = String(url)
+    .toLowerCase()
+    .split("?")[0]
+    .split("#")[0];
+
+  if (
+    /\.(jpg|jpeg|png|gif|webp|bmp|svg|avif)$/i.test(
+      cleanUrl
+    )
+  ) {
+    return "image";
+  }
+
+  if (
+    /\.(mp4|webm|mov|avi|mkv|m4v|ogg)$/i.test(
+      cleanUrl
+    )
+  ) {
+    return "video";
+  }
+
+  return "";
+};
+
+const normalizeMedia = (problem) => {
+  if (!problem) return [];
+
+  const sources = [];
+
+  /*
+   * Standard media array.
+   */
+  if (Array.isArray(problem.media)) {
+    sources.push(...problem.media);
+  }
+
+  /*
+   * Attachments array.
+   */
+  if (Array.isArray(problem.attachments)) {
+    sources.push(...problem.attachments);
+  }
+
+  /*
+   * Separate image array.
+   */
+  if (Array.isArray(problem.images)) {
+    sources.push(
+      ...problem.images.map((item) => {
+        if (typeof item === "string") {
+          return {
+            url: item,
+            type: "image",
+          };
+        }
+
+        return {
+          ...item,
+          type:
+            item.type ||
+            item.mimeType ||
+            "image",
+        };
+      })
+    );
+  }
+
+  /*
+   * Separate video array.
+   */
+  if (Array.isArray(problem.videos)) {
+    sources.push(
+      ...problem.videos.map((item) => {
+        if (typeof item === "string") {
+          return {
+            url: item,
+            type: "video",
+          };
+        }
+
+        return {
+          ...item,
+          type:
+            item.type ||
+            item.mimeType ||
+            "video",
+        };
+      })
+    );
+  }
+
+  /*
+   * Evidence array.
+   */
+  if (Array.isArray(problem.evidence)) {
+    sources.push(...problem.evidence);
+  }
+
+  /*
+   * Some APIs return a single evidence/media object.
+   */
+  if (
+    problem.media &&
+    !Array.isArray(problem.media) &&
+    typeof problem.media === "object"
+  ) {
+    sources.push(problem.media);
+  }
+
+  const normalized = sources
+    .map((item, index) => {
+      const url = getMediaUrl(item);
+      const type = getMediaType(item);
+
+      return {
+        id:
+          item?._id ||
+          item?.id ||
+          `media-${index}`,
+        url,
+        type,
+        original: item,
+      };
+    })
+    .filter((item) => item.url);
+
+  /*
+   * Remove duplicate URLs.
+   */
+  return normalized.filter(
+    (item, index, array) =>
+      array.findIndex(
+        (other) => other.url === item.url
+      ) === index
+  );
+};
+
+/*
+|--------------------------------------------------------------------------
+| STATUS / PRIORITY
+|--------------------------------------------------------------------------
+*/
 
 const getStatusClass = (status) => {
   const styles = {
     Pending: "bg-slate-100 text-slate-700",
-    "Under Review": "bg-amber-50 text-amber-700",
-    Validated: "bg-blue-50 text-blue-700",
-    "In Progress": "bg-indigo-50 text-indigo-700",
-    Resolved: "bg-emerald-50 text-emerald-700",
-    Rejected: "bg-red-50 text-red-700",
-    Duplicate: "bg-purple-50 text-purple-700",
+    "Under Review":
+      "bg-amber-50 text-amber-700",
+    Validated:
+      "bg-blue-50 text-blue-700",
+    "In Progress":
+      "bg-indigo-50 text-indigo-700",
+    Resolved:
+      "bg-emerald-50 text-emerald-700",
+    Rejected:
+      "bg-red-50 text-red-700",
+    Duplicate:
+      "bg-purple-50 text-purple-700",
   };
 
-  return styles[status] || "bg-slate-100 text-slate-700";
+  return (
+    styles[status] ||
+    "bg-slate-100 text-slate-700"
+  );
 };
 
 const getPriorityClass = (priority) => {
@@ -75,8 +383,17 @@ const getPriorityClass = (priority) => {
     Critical: "bg-red-50 text-red-700",
   };
 
-  return styles[priority] || "bg-slate-100 text-slate-700";
+  return (
+    styles[priority] ||
+    "bg-slate-100 text-slate-700"
+  );
 };
+
+/*
+|--------------------------------------------------------------------------
+| DATE HELPERS
+|--------------------------------------------------------------------------
+*/
 
 const formatDate = (date) => {
   if (!date) return "—";
@@ -107,7 +424,9 @@ const getRelativeTime = (date) => {
 
   const diff = Date.now() - parsed.getTime();
 
-  const minutes = Math.floor(diff / 60000);
+  const minutes = Math.floor(
+    diff / 60000
+  );
 
   if (minutes < 1) {
     return "Just now";
@@ -117,33 +436,61 @@ const getRelativeTime = (date) => {
     return `${minutes}m ago`;
   }
 
-  const hours = Math.floor(minutes / 60);
+  const hours = Math.floor(
+    minutes / 60
+  );
 
   if (hours < 24) {
     return `${hours}h ago`;
   }
 
-  const days = Math.floor(hours / 24);
+  const days = Math.floor(
+    hours / 24
+  );
 
   if (days < 7) {
     return `${days}d ago`;
   }
 
-  return parsed.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-  });
+  return parsed.toLocaleDateString(
+    "en-IN",
+    {
+      day: "2-digit",
+      month: "short",
+    }
+  );
 };
 
-const formatActivityAction = (action = "") => {
+/*
+|--------------------------------------------------------------------------
+| ACTIVITY
+|--------------------------------------------------------------------------
+*/
+
+const formatActivityAction = (
+  action = ""
+) => {
   const labels = {
-    PROBLEM_REPORTED: "Problem Reported",
-    DEPARTMENT_AUTO_ASSIGNED: "Department Auto Assigned",
-    DEPARTMENT_CORRECTED: "Department Corrected",
-    STATUS_CHANGED: "Status Changed",
-    VALIDATION_STATUS_CHANGED: "Validation Status Changed",
-    PRIORITY_CHANGED: "Priority Changed",
-    PROBLEM_UPDATED: "Problem Updated",
+    PROBLEM_REPORTED:
+      "Problem Reported",
+
+    DEPARTMENT_AUTO_ASSIGNED:
+      "Department Auto Assigned",
+
+    DEPARTMENT_CORRECTED:
+      "Department Corrected",
+
+    STATUS_CHANGED:
+      "Status Changed",
+
+    VALIDATION_STATUS_CHANGED:
+      "Validation Status Changed",
+
+    PRIORITY_CHANGED:
+      "Priority Changed",
+
+    PROBLEM_UPDATED:
+      "Problem Updated",
   };
 
   if (labels[action]) {
@@ -154,12 +501,24 @@ const formatActivityAction = (action = "") => {
     action
       .replaceAll("_", " ")
       .toLowerCase()
-      .replace(/\b\w/g, (char) => char.toUpperCase()) ||
+      .replace(
+        /\b\w/g,
+        (char) => char.toUpperCase()
+      ) ||
     "Activity"
   );
 };
 
-const InfoItem = ({ label, value }) => (
+/*
+|--------------------------------------------------------------------------
+| SMALL UI COMPONENTS
+|--------------------------------------------------------------------------
+*/
+
+const InfoItem = ({
+  label,
+  value,
+}) => (
   <div>
     <p className="text-[12px] font-medium uppercase tracking-wide text-slate-400">
       {label}
@@ -171,7 +530,10 @@ const InfoItem = ({ label, value }) => (
   </div>
 );
 
-const SectionTitle = ({ title, count }) => (
+const SectionTitle = ({
+  title,
+  count,
+}) => (
   <div className="mb-4 flex items-center justify-between">
     <h2 className="text-[16px] font-semibold text-[#172B3A]">
       {title}
@@ -185,67 +547,100 @@ const SectionTitle = ({ title, count }) => (
   </div>
 );
 
+/*
+|--------------------------------------------------------------------------
+| MAIN COMPONENT
+|--------------------------------------------------------------------------
+*/
+
 export default function GovernmentProblemDetails() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const [problem, setProblem] = useState(null);
+  const [problem, setProblem] =
+    useState(null);
 
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [loading, setLoading] =
+    useState(true);
+
+  const [saving, setSaving] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
 
   /*
    * SAVED VALUES
-   * These represent what is currently stored in the backend.
    */
-  const [status, setStatus] = useState("");
-  const [priority, setPriority] = useState("");
-  const [department, setDepartment] = useState("");
+
+  const [status, setStatus] =
+    useState("");
+
+  const [priority, setPriority] =
+    useState("");
+
+  const [department, setDepartment] =
+    useState("");
 
   /*
    * TEMPORARY DEPARTMENT
    *
-   * This is only changed when the dropdown changes.
-   * It does NOT update the complaint until Save Changes.
+   * This changes when dropdown changes.
+   *
+   * It DOES NOT change the actual complaint
+   * until Save Changes is clicked.
    */
-  const [selectedDepartment, setSelectedDepartment] =
-    useState("");
 
-  const [selectedMedia, setSelectedMedia] = useState(null);
+  const [
+    selectedDepartment,
+    setSelectedDepartment,
+  ] = useState("");
 
-  // ==========================================================
-  // FETCH PROBLEM
-  // ==========================================================
+  const [
+    selectedMedia,
+    setSelectedMedia,
+  ] = useState(null);
+
+  /*
+   |--------------------------------------------------------------------------
+   | FETCH PROBLEM
+   |--------------------------------------------------------------------------
+   */
 
   const fetchProblem = async () => {
     try {
       setLoading(true);
       setError("");
 
-      const response = await api.get(`/problems/${id}`);
+      const response = await api.get(
+        `/problems/${id}`
+      );
 
-      const data = response.data.problem || response.data;
+      const data =
+        response.data?.problem ||
+        response.data;
 
       setProblem(data);
 
-      setStatus(data.status || "Pending");
-      setPriority(data.priority || "Medium");
+      setStatus(
+        data.status || "Pending"
+      );
+
+      setPriority(
+        data.priority || "Medium"
+      );
 
       const savedDepartment =
-        data.governmentDepartment || "";
+        data.governmentDepartment ||
+        "";
 
-      /*
-       * Saved department is used for both:
-       *
-       * department
-       * selectedDepartment
-       *
-       * so the dropdown starts with the actual
-       * saved value.
-       */
-      setDepartment(savedDepartment);
-      setSelectedDepartment(savedDepartment);
+      setDepartment(
+        savedDepartment
+      );
+
+      setSelectedDepartment(
+        savedDepartment
+      );
     } catch (err) {
       console.error(err);
 
@@ -262,37 +657,50 @@ export default function GovernmentProblemDetails() {
     fetchProblem();
   }, [id]);
 
-  // ==========================================================
-  // UPDATE PROBLEM
-  // ==========================================================
+  /*
+   |--------------------------------------------------------------------------
+   | UPDATE PROBLEM
+   |--------------------------------------------------------------------------
+   */
 
-  const updateProblem = async (updates) => {
+  const updateProblem = async (
+    updates
+  ) => {
     try {
       setSaving(true);
       setError("");
 
-      const response = await api.patch(
-        `/problems/${id}/government`,
-        updates
-      );
+      const response =
+        await api.patch(
+          `/problems/${id}/government`,
+          updates
+        );
 
       const updated =
-        response.data.problem || response.data;
+        response.data?.problem ||
+        response.data;
 
-      /*
-       * Update the actual saved problem only
-       * after backend successfully responds.
-       */
       setProblem(updated);
 
-      setStatus(updated.status || status);
-      setPriority(updated.priority || priority);
+      setStatus(
+        updated.status || status
+      );
+
+      setPriority(
+        updated.priority || priority
+      );
 
       const savedDepartment =
-        updated.governmentDepartment || "";
+        updated.governmentDepartment ||
+        "";
 
-      setDepartment(savedDepartment);
-      setSelectedDepartment(savedDepartment);
+      setDepartment(
+        savedDepartment
+      );
+
+      setSelectedDepartment(
+        savedDepartment
+      );
     } catch (err) {
       console.error(err);
 
@@ -305,35 +713,59 @@ export default function GovernmentProblemDetails() {
     }
   };
 
-  // ==========================================================
-  // VALIDATION STATUS
-  // ==========================================================
+  /*
+   |--------------------------------------------------------------------------
+   | VALIDATION STATUS
+   |--------------------------------------------------------------------------
+   */
 
-  const getValidationStatus = (currentStatus) => {
+  const getValidationStatus = (
+    currentStatus
+  ) => {
     const validationMap = {
       Validated: "Validated",
       Rejected: "Rejected",
       Duplicate: "Duplicate",
     };
 
-    return validationMap[currentStatus];
+    return validationMap[
+      currentStatus
+    ];
   };
 
-  // ==========================================================
-  // SAVE CHANGES
-  // ==========================================================
+  /*
+   |--------------------------------------------------------------------------
+   | SAVE CHANGES
+   |--------------------------------------------------------------------------
+   |
+   | Category is calculated ONLY here.
+   |
+   | Example:
+   |
+   | Current saved department:
+   | Environment
+   |
+   | Government selects:
+   | Health
+   |
+   | Before Save:
+   | Backend = Environment
+   |
+   | After Save:
+   | Department = Health
+   | Category = Health
+   |
+   */
 
   const handleSave = async () => {
-    /*
-     * Category is calculated ONLY when Save is clicked.
-     *
-     * Example:
-     *
-     * selectedDepartment = Health
-     * category = Health
-     *
-     * Nothing changes in the complaint before this function.
-     */
+    if (!selectedDepartment) {
+      setError(
+        "Please select a department."
+      );
+
+      return;
+    }
+
     const newCategory =
       getCategoryFromDepartment(
         selectedDepartment
@@ -359,34 +791,38 @@ export default function GovernmentProblemDetails() {
     });
   };
 
-  // ==========================================================
-  // QUICK ACTIONS
-  // ==========================================================
+  /*
+   |--------------------------------------------------------------------------
+   | QUICK ACTIONS
+   |--------------------------------------------------------------------------
+   |
+   | Quick actions always use SAVED department.
+   |
+   | Therefore an unsaved department selection
+   | will not accidentally be saved.
+   |
+   */
 
-  const handleQuickAction = (action) => {
-    /*
-     * IMPORTANT:
-     *
-     * Quick actions use the SAVED department,
-     * not selectedDepartment.
-     *
-     * Therefore, if Government selects "Health"
-     * but does not click Save, then clicks Validate,
-     * the department will NOT accidentally become Health.
-     */
-
+  const handleQuickAction = (
+    action
+  ) => {
     const savedCategory =
-      getCategoryFromDepartment(department);
+      getCategoryFromDepartment(
+        department
+      );
 
     if (action === "validate") {
       setStatus("Validated");
 
       updateProblem({
         status: "Validated",
-        validationStatus: "Validated",
+        validationStatus:
+          "Validated",
         priority,
 
-        governmentDepartment: department,
+        governmentDepartment:
+          department,
+
         category: savedCategory,
       });
     }
@@ -396,10 +832,13 @@ export default function GovernmentProblemDetails() {
 
       updateProblem({
         status: "Rejected",
-        validationStatus: "Rejected",
+        validationStatus:
+          "Rejected",
         priority,
 
-        governmentDepartment: department,
+        governmentDepartment:
+          department,
+
         category: savedCategory,
       });
     }
@@ -409,64 +848,88 @@ export default function GovernmentProblemDetails() {
 
       updateProblem({
         status: "Duplicate",
-        validationStatus: "Duplicate",
+        validationStatus:
+          "Duplicate",
         priority,
 
-        governmentDepartment: department,
+        governmentDepartment:
+          department,
+
         category: savedCategory,
       });
     }
   };
 
-  // ==========================================================
-  // DEPARTMENT CHANGE
-  // ==========================================================
+  /*
+   |--------------------------------------------------------------------------
+   | DEPARTMENT CHANGE
+   |--------------------------------------------------------------------------
+   |
+   | ONLY update temporary dropdown.
+   |
+   | No API call.
+   | No problem update.
+   | No category update.
+   */
 
-  const handleDepartmentChange = (newDepartment) => {
-    /*
-     * ONLY change temporary dropdown value.
-     *
-     * DO NOT:
-     * - change problem
-     * - change department
-     * - change category
-     * - call API
-     *
-     * Everything is committed only by Save Changes.
-     */
-    setSelectedDepartment(newDepartment);
+  const handleDepartmentChange = (
+    newDepartment
+  ) => {
+    setSelectedDepartment(
+      newDepartment
+    );
 
     setError("");
   };
 
-  // ==========================================================
-  // LOADING
-  // ==========================================================
+  /*
+   |--------------------------------------------------------------------------
+   | NORMALIZED MEDIA
+   |--------------------------------------------------------------------------
+   */
+
+  const media = useMemo(() => {
+    return normalizeMedia(problem);
+  }, [problem]);
+
+  /*
+   |--------------------------------------------------------------------------
+   | LOADING
+   |--------------------------------------------------------------------------
+   */
 
   if (loading) {
     return (
       <div className="flex min-h-[65vh] items-center justify-center">
-        <p className="text-[14px] text-slate-500">
-          Loading complaint...
-        </p>
+        <div className="text-center">
+          <p className="text-[14px] text-slate-500">
+            Loading complaint...
+          </p>
+        </div>
       </div>
     );
   }
 
-  // ==========================================================
-  // NOT FOUND
-  // ==========================================================
+  /*
+   |--------------------------------------------------------------------------
+   | NOT FOUND
+   |--------------------------------------------------------------------------
+   */
 
   if (!problem) {
     return (
       <div className="mx-auto max-w-7xl px-5 py-9">
         <div className="rounded-xl border border-red-100 bg-red-50 p-6">
           <p className="text-[14px] font-medium text-red-700">
-            {error || "Complaint not found."}
+            {error ||
+              "Complaint not found."}
           </p>
 
           <button
-            onClick={() => navigate(-1)}
+            type="button"
+            onClick={() =>
+              navigate(-1)
+            }
             className="mt-4 rounded-lg bg-[#2477B5] px-4 py-2.5 text-[13px] font-semibold text-white hover:bg-[#1d659b]"
           >
             Go Back
@@ -476,31 +939,39 @@ export default function GovernmentProblemDetails() {
     );
   }
 
-  // ==========================================================
-  // DATA
-  // ==========================================================
+  /*
+   |--------------------------------------------------------------------------
+   | ACTIVITY
+   |--------------------------------------------------------------------------
+   */
 
-  const activity = Array.isArray(problem.activity)
+  const activity = Array.isArray(
+    problem.activity
+  )
     ? problem.activity
-    : Array.isArray(problem.activities)
+    : Array.isArray(
+        problem.activities
+      )
     ? problem.activities
     : [];
 
-  const sortedActivity = [...activity].sort(
+  const sortedActivity = [
+    ...activity,
+  ].sort(
     (a, b) =>
-      new Date(b.createdAt || 0) -
-      new Date(a.createdAt || 0)
+      new Date(
+        b.createdAt || 0
+      ) -
+      new Date(
+        a.createdAt || 0
+      )
   );
 
-  const media = Array.isArray(problem.media)
-    ? problem.media
-    : Array.isArray(problem.attachments)
-    ? problem.attachments
-    : [];
-
-  // ==========================================================
-  // MAIN UI
-  // ==========================================================
+  /*
+   |--------------------------------------------------------------------------
+   | MAIN UI
+   |--------------------------------------------------------------------------
+   */
 
   return (
     <div className="min-h-screen bg-[#F7F9FC]">
@@ -515,7 +986,10 @@ export default function GovernmentProblemDetails() {
           <div className="flex items-center gap-3">
 
             <button
-              onClick={() => navigate(-1)}
+              type="button"
+              onClick={() =>
+                navigate(-1)
+              }
               className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
             >
               ←
@@ -552,6 +1026,7 @@ export default function GovernmentProblemDetails() {
             </span>
 
           </div>
+
         </div>
 
         {/* ==================================================
@@ -664,7 +1139,9 @@ export default function GovernmentProblemDetails() {
 
           <div className="space-y-5">
 
-            {/* COMPLAINT INFORMATION */}
+            {/* ==================================================
+                COMPLAINT INFORMATION
+            ================================================== */}
 
             <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 
@@ -690,18 +1167,23 @@ export default function GovernmentProblemDetails() {
                 <InfoItem
                   label="Reported By"
                   value={
-                    problem.reportedBy?.name ||
-                    problem.citizen?.name ||
+                    problem.reportedBy
+                      ?.name ||
+                    problem.citizen
+                      ?.name ||
                     problem.user?.name ||
-                    problem.createdBy?.name
+                    problem.createdBy
+                      ?.name
                   }
                 />
 
                 <InfoItem
                   label="Contact"
                   value={
-                    problem.reportedBy?.phone ||
-                    problem.citizen?.phone ||
+                    problem.reportedBy
+                      ?.phone ||
+                    problem.citizen
+                      ?.phone ||
                     problem.user?.phone
                   }
                 />
@@ -710,7 +1192,9 @@ export default function GovernmentProblemDetails() {
 
             </section>
 
-            {/* DESCRIPTION */}
+            {/* ==================================================
+                PROBLEM DESCRIPTION
+            ================================================== */}
 
             <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 
@@ -727,63 +1211,164 @@ export default function GovernmentProblemDetails() {
 
             </section>
 
-            {/* EVIDENCE */}
+            {/* ==================================================
+                PHOTOS & VIDEOS
+            ================================================== */}
 
-            {media.length > 0 && (
-              <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 
-                <SectionTitle
-                  title="Evidence"
-                  count={media.length}
-                />
+              <SectionTitle
+                title="Photos & Videos"
+                count={media.length}
+              />
 
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {media.length === 0 ? (
 
-                  {media.map((item, index) => (
+                <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-5 py-10 text-center">
 
-                    <button
-                      key={
-                        item._id ||
-                        item.id ||
-                        index
-                      }
-                      onClick={() =>
-                        setSelectedMedia(index)
-                      }
-                      className="group relative aspect-square overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
-                    >
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-400 shadow-sm">
+                    📷
+                  </div>
 
-                      {item.type === "image" ? (
-                        <img
-                          src={item.url}
-                          alt={`Evidence ${
-                            index + 1
-                          }`}
-                          className="h-full w-full object-cover transition group-hover:scale-105"
-                        />
-                      ) : (
-                        <video
-                          src={item.url}
-                          className="h-full w-full object-cover"
-                        />
-                      )}
+                  <p className="mt-3 text-[14px] font-medium text-slate-500">
+                    No photos or videos available
+                  </p>
 
-                      {item.type === "video" && (
-                        <span className="absolute bottom-1.5 left-1.5 rounded bg-black/70 px-1.5 py-0.5 text-[10px] text-white">
-                          VIDEO
-                        </span>
-                      )}
-
-                    </button>
-
-                  ))}
+                  <p className="mt-1 text-[12px] text-slate-400">
+                    No media was returned with this complaint.
+                  </p>
 
                 </div>
 
-              </section>
-            )}
+              ) : (
 
-            {/* LOCATION */}
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+
+                  {media.map(
+                    (item, index) => (
+
+                      <button
+                        key={
+                          item.id ||
+                          `media-${index}`
+                        }
+                        type="button"
+                        onClick={() =>
+                          setSelectedMedia(
+                            index
+                          )
+                        }
+                        className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-100"
+                      >
+
+                        {/* IMAGE */}
+
+                        {item.type ===
+                        "image" ? (
+
+                          <img
+                            src={item.url}
+                            alt={`Complaint evidence ${
+                              index + 1
+                            }`}
+                            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                            onError={(
+                              event
+                            ) => {
+                              console.error(
+                                "Image failed to load:",
+                                item.url
+                              );
+
+                              event.currentTarget.style.display =
+                                "none";
+                            }}
+                          />
+
+                        ) : item.type ===
+                          "video" ? (
+
+                          /* VIDEO */
+
+                          <div className="relative h-full w-full">
+
+                            <video
+                              src={item.url}
+                              muted
+                              playsInline
+                              preload="metadata"
+                              className="h-full w-full object-cover"
+                              onError={() =>
+                                console.error(
+                                  "Video failed to load:",
+                                  item.url
+                                )
+                              }
+                            />
+
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+
+                              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black/70 text-lg text-white shadow-lg">
+                                ▶
+                              </div>
+
+                            </div>
+
+                            <span className="absolute bottom-2 left-2 rounded-md bg-black/70 px-2 py-1 text-[10px] font-semibold text-white">
+                              VIDEO
+                            </span>
+
+                          </div>
+
+                        ) : (
+
+                          /* UNKNOWN FILE */
+
+                          <div className="flex h-full w-full items-center justify-center bg-slate-100">
+
+                            <div className="text-center">
+
+                              <div className="text-2xl">
+                                📎
+                              </div>
+
+                              <p className="mt-2 text-[11px] text-slate-500">
+                                Open File
+                              </p>
+
+                            </div>
+
+                          </div>
+
+                        )}
+
+                        {/* HOVER */}
+
+                        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 opacity-0 transition group-hover:opacity-100">
+
+                          <p className="text-left text-[11px] font-medium text-white">
+                            {item.type ===
+                            "video"
+                              ? "Open video"
+                              : "Open photo"}
+                          </p>
+
+                        </div>
+
+                      </button>
+
+                    )
+                  )}
+
+                </div>
+
+              )}
+
+            </section>
+
+            {/* ==================================================
+                LOCATION
+            ================================================== */}
 
             <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 
@@ -796,7 +1381,8 @@ export default function GovernmentProblemDetails() {
                   <InfoItem
                     label="Address"
                     value={
-                      problem.location?.address
+                      problem.location
+                        ?.address
                     }
                   />
 
@@ -805,14 +1391,16 @@ export default function GovernmentProblemDetails() {
                 <InfoItem
                   label="Latitude"
                   value={
-                    problem.location?.latitude
+                    problem.location
+                      ?.latitude
                   }
                 />
 
                 <InfoItem
                   label="Longitude"
                   value={
-                    problem.location?.longitude
+                    problem.location
+                      ?.longitude
                   }
                 />
 
@@ -836,7 +1424,7 @@ export default function GovernmentProblemDetails() {
 
                 {/* ==================================================
                     DEPARTMENT
-                    ================================================== */}
+                ================================================== */}
 
                 <div>
 
@@ -845,7 +1433,9 @@ export default function GovernmentProblemDetails() {
                   </label>
 
                   <select
-                    value={selectedDepartment}
+                    value={
+                      selectedDepartment
+                    }
                     onChange={(e) =>
                       handleDepartmentChange(
                         e.target.value
@@ -872,7 +1462,8 @@ export default function GovernmentProblemDetails() {
 
                   </select>
 
-                  {selectedDepartment !== department && (
+                  {selectedDepartment !==
+                    department && (
                     <p className="mt-1.5 text-[11px] font-medium text-amber-600">
                       Unsaved department change
                     </p>
@@ -882,7 +1473,7 @@ export default function GovernmentProblemDetails() {
 
                 {/* ==================================================
                     STATUS
-                    ================================================== */}
+                ================================================== */}
 
                 <div>
 
@@ -893,7 +1484,9 @@ export default function GovernmentProblemDetails() {
                   <select
                     value={status}
                     onChange={(e) =>
-                      setStatus(e.target.value)
+                      setStatus(
+                        e.target.value
+                      )
                     }
                     disabled={saving}
                     className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-[14px] text-slate-700 outline-none transition focus:border-[#2477B5] focus:ring-1 focus:ring-[#2477B5]/20 disabled:cursor-not-allowed disabled:bg-slate-50"
@@ -916,7 +1509,7 @@ export default function GovernmentProblemDetails() {
 
                 {/* ==================================================
                     PRIORITY
-                    ================================================== */}
+                ================================================== */}
 
                 <div>
 
@@ -927,7 +1520,9 @@ export default function GovernmentProblemDetails() {
                   <select
                     value={priority}
                     onChange={(e) =>
-                      setPriority(e.target.value)
+                      setPriority(
+                        e.target.value
+                      )
                     }
                     disabled={saving}
                     className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-[14px] text-slate-700 outline-none transition focus:border-[#2477B5] focus:ring-1 focus:ring-[#2477B5]/20 disabled:cursor-not-allowed disabled:bg-slate-50"
@@ -949,10 +1544,11 @@ export default function GovernmentProblemDetails() {
                 </div>
 
                 {/* ==================================================
-                    SAVE CHANGES
-                    ================================================== */}
+                    SAVE
+                ================================================== */}
 
                 <button
+                  type="button"
                   onClick={handleSave}
                   disabled={
                     saving ||
@@ -967,7 +1563,7 @@ export default function GovernmentProblemDetails() {
 
                 {/* ==================================================
                     QUICK ACTIONS
-                    ================================================== */}
+                ================================================== */}
 
                 <div className="border-t border-slate-100 pt-4">
 
@@ -978,6 +1574,7 @@ export default function GovernmentProblemDetails() {
                   <div className="grid grid-cols-3 gap-2.5">
 
                     <button
+                      type="button"
                       onClick={() =>
                         handleQuickAction(
                           "validate"
@@ -990,6 +1587,7 @@ export default function GovernmentProblemDetails() {
                     </button>
 
                     <button
+                      type="button"
                       onClick={() =>
                         handleQuickAction(
                           "reject"
@@ -1002,6 +1600,7 @@ export default function GovernmentProblemDetails() {
                     </button>
 
                     <button
+                      type="button"
                       onClick={() =>
                         handleQuickAction(
                           "duplicate"
@@ -1022,6 +1621,7 @@ export default function GovernmentProblemDetails() {
             </section>
 
           </div>
+
         </div>
 
         {/* ==================================================
@@ -1056,7 +1656,8 @@ export default function GovernmentProblemDetails() {
 
           <div className="h-[420px] overflow-y-auto px-6 py-6">
 
-            {sortedActivity.length === 0 ? (
+            {sortedActivity.length ===
+            0 ? (
 
               <div className="flex h-full items-center justify-center">
 
@@ -1106,7 +1707,9 @@ export default function GovernmentProblemDetails() {
                                   )}
                                 </h3>
 
-                                {item.performedBy?.name && (
+                                {item
+                                  .performedBy
+                                  ?.name && (
                                   <>
                                     <span className="text-slate-300">
                                       •
@@ -1164,92 +1767,141 @@ export default function GovernmentProblemDetails() {
           media[selectedMedia] && (
 
             <div
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-5"
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
               onClick={() =>
                 setSelectedMedia(null)
               }
             >
 
               <div
-                className="relative flex h-[75vh] w-[75vw] max-w-6xl items-center justify-center rounded-xl bg-black"
+                className="relative flex h-[85vh] w-full max-w-6xl items-center justify-center"
                 onClick={(e) =>
                   e.stopPropagation()
                 }
               >
 
+                {/* CLOSE */}
+
                 <button
+                  type="button"
                   onClick={() =>
                     setSelectedMedia(null)
                   }
-                  className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-sm text-white hover:bg-white/20"
+                  className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-lg text-white backdrop-blur transition hover:bg-white/20"
                 >
                   ✕
                 </button>
 
-                {media[selectedMedia].type ===
-                "image" ? (
+                {/* IMAGE */}
+
+                {media[selectedMedia]
+                  .type === "image" && (
 
                   <img
                     src={
-                      media[selectedMedia]
-                        .url
+                      media[
+                        selectedMedia
+                      ].url
                     }
-                    alt="Evidence"
-                    className="max-h-full max-w-full rounded-lg object-contain"
+                    alt="Complaint evidence"
+                    className="max-h-full max-w-full rounded-xl object-contain"
                   />
+                )}
 
-                ) : (
+                {/* VIDEO */}
+
+                {media[selectedMedia]
+                  .type === "video" && (
 
                   <video
                     src={
-                      media[selectedMedia]
-                        .url
+                      media[
+                        selectedMedia
+                      ].url
                     }
                     controls
                     autoPlay
-                    className="max-h-full max-w-full rounded-lg"
+                    playsInline
+                    className="max-h-full max-w-full rounded-xl"
                   />
-
                 )}
 
-                {media.length > 1 && (
-                  <>
+                {/* UNKNOWN */}
 
-                    <button
-                      onClick={() =>
-                        setSelectedMedia(
-                          (
-                            selectedMedia -
-                            1 +
-                            media.length
-                          ) % media.length
-                        )
-                      }
-                      className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-xl text-white hover:bg-white/20"
-                    >
-                      ‹
-                    </button>
+                {!["image", "video"].includes(
+                  media[selectedMedia].type
+                ) && (
 
-                    <button
-                      onClick={() =>
-                        setSelectedMedia(
-                          (
-                            selectedMedia +
-                            1
-                          ) % media.length
-                        )
-                      }
-                      className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-xl text-white hover:bg-white/20"
-                    >
-                      ›
-                    </button>
+                  <div className="rounded-xl bg-white p-8 text-center">
 
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3.5 py-1.5 text-[12px] text-white">
-                      {selectedMedia + 1} /{" "}
-                      {media.length}
+                    <div className="text-3xl">
+                      📎
                     </div>
 
-                  </>
+                    <p className="mt-3 text-sm text-slate-600">
+                      Unable to preview this file.
+                    </p>
+
+                    <a
+                      href={
+                        media[
+                          selectedMedia
+                        ].url
+                      }
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-4 inline-block rounded-lg bg-[#2477B5] px-4 py-2 text-sm font-semibold text-white"
+                    >
+                      Open File
+                    </a>
+
+                  </div>
+                )}
+
+                {/* PREVIOUS */}
+
+                {media.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSelectedMedia(
+                        (selectedMedia -
+                          1 +
+                          media.length) %
+                          media.length
+                      )
+                    }
+                    className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-2xl text-white backdrop-blur transition hover:bg-white/20"
+                  >
+                    ‹
+                  </button>
+                )}
+
+                {/* NEXT */}
+
+                {media.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSelectedMedia(
+                        (selectedMedia +
+                          1) %
+                          media.length
+                      )
+                    }
+                    className="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-2xl text-white backdrop-blur transition hover:bg-white/20"
+                  >
+                    ›
+                  </button>
+                )}
+
+                {/* COUNTER */}
+
+                {media.length > 1 && (
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/70 px-4 py-2 text-xs font-medium text-white">
+                    {selectedMedia + 1}{" "}
+                    / {media.length}
+                  </div>
                 )}
 
               </div>

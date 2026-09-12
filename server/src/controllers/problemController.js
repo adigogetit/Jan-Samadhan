@@ -84,21 +84,20 @@ const uploadBufferToCloudinary = (
   folder
 ) => {
   return new Promise((resolve, reject) => {
-    const uploadStream =
-      cloudinary.uploader.upload_stream(
-        {
-          resource_type: resourceType,
-          folder,
-        },
-        (error, result) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-
-          resolve(result);
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        resource_type: resourceType,
+        folder,
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+          return;
         }
-      );
+
+        resolve(result);
+      }
+    );
 
     Readable.from(buffer).pipe(uploadStream);
   });
@@ -136,12 +135,14 @@ const createProblem = async (req, res) => {
 
     const resolvedAddress =
       address || parsedLocation.address || "";
+
     const resolvedLatitude =
       latitude !== undefined && latitude !== ""
         ? Number(latitude)
         : parsedLocation.latitude !== undefined
           ? Number(parsedLocation.latitude)
           : undefined;
+
     const resolvedLongitude =
       longitude !== undefined && longitude !== ""
         ? Number(longitude)
@@ -176,15 +177,13 @@ const createProblem = async (req, res) => {
     // ----------------------------------------------------------
 
     for (const file of files) {
-      const isVideo =
-        file.mimetype.startsWith("video/");
+      const isVideo = file.mimetype.startsWith("video/");
 
-      const result =
-        await uploadBufferToCloudinary(
-          file.buffer,
-          isVideo ? "video" : "image",
-          "jan-samadhan/problems"
-        );
+      const result = await uploadBufferToCloudinary(
+        file.buffer,
+        isVideo ? "video" : "image",
+        "jan-samadhan/problems"
+      );
 
       if (isVideo) {
         videos.push(result.secure_url);
@@ -204,21 +203,24 @@ const createProblem = async (req, res) => {
     // DETERMINE FINAL CATEGORY, DEPARTMENT, PRIORITY
     // ----------------------------------------------------------
 
-    let finalPriority = "Medium";          // safe default
-    let aiFields = {};                     // AI fields to save
+    let finalPriority = "Medium";
+    let aiFields = {};
     const activityEntries = [];
 
     activityEntries.push({
       action: "PROBLEM_REPORTED",
       description: "Citizen reported a new problem.",
       performedBy: req.user._id,
-      metadata: { category },
+      metadata: {
+        category,
+      },
     });
 
     if (aiResult) {
-      // ── AI SUCCESS ──────────────────────────────────────────
+      // --------------------------------------------------------
+      // AI SUCCESS
+      // --------------------------------------------------------
 
-      // Use AI category if it maps to a valid JAN-SAMADHAN category.
       const aiMappedCategory =
         Object.keys(CATEGORY_DEPARTMENT_MAP).includes(
           aiResult.category
@@ -251,7 +253,9 @@ const createProblem = async (req, res) => {
         },
       });
     } else {
-      // ── AI FALLBACK ─────────────────────────────────────────
+      // --------------------------------------------------------
+      // AI FALLBACK
+      // --------------------------------------------------------
 
       activityEntries.push({
         action: "AI_CLASSIFICATION_FALLBACK",
@@ -282,7 +286,9 @@ const createProblem = async (req, res) => {
 
     activityEntries.push({
       action: "DEPARTMENT_AUTO_ASSIGNED",
-      description: `Problem automatically routed to ${governmentDepartment} based on ${aiResult ? "AI-classified" : "citizen-selected"} category "${finalCategory}".`,
+      description: `Problem automatically routed to ${governmentDepartment} based on ${
+        aiResult ? "AI-classified" : "citizen-selected"
+      } category "${finalCategory}".`,
       performedBy: req.user._id,
       metadata: {
         category: finalCategory,
@@ -350,17 +356,13 @@ const createProblem = async (req, res) => {
 
 const getMyProblems = async (req, res) => {
   try {
-    const problems =
-      await Problem.find({
-        reportedBy: req.user._id,
+    const problems = await Problem.find({
+      reportedBy: req.user._id,
+    })
+      .sort({
+        createdAt: -1,
       })
-        .sort({
-          createdAt: -1,
-        })
-        .populate(
-          "reportedBy",
-          "name email"
-        );
+      .populate("reportedBy", "name email");
 
     return res.status(200).json({
       success: true,
@@ -371,8 +373,7 @@ const getMyProblems = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message:
-        "Unable to fetch your problems.",
+      message: "Unable to fetch your problems.",
       error: error.message,
     });
   }
@@ -382,10 +383,7 @@ const getMyProblems = async (req, res) => {
 // GET GOVERNMENT PROBLEMS
 // ============================================================
 
-const getGovernmentProblems = async (
-  req,
-  res
-) => {
+const getGovernmentProblems = async (req, res) => {
   try {
     const {
       search,
@@ -433,11 +431,7 @@ const getGovernmentProblems = async (
     // ----------------------------------------------------------
 
     if (category) {
-      if (
-        !Object.keys(
-          CATEGORY_DEPARTMENT_MAP
-        ).includes(category)
-      ) {
+      if (!Object.keys(CATEGORY_DEPARTMENT_MAP).includes(category)) {
         return res.status(400).json({
           success: false,
           message: "Invalid problem category.",
@@ -460,20 +454,14 @@ const getGovernmentProblems = async (
     // ----------------------------------------------------------
 
     if (department) {
-      if (
-        !ALLOWED_DEPARTMENTS.includes(
-          department
-        )
-      ) {
+      if (!ALLOWED_DEPARTMENTS.includes(department)) {
         return res.status(400).json({
           success: false,
-          message:
-            "Invalid government department.",
+          message: "Invalid government department.",
         });
       }
 
-      filter.governmentDepartment =
-        department;
+      filter.governmentDepartment = department;
     }
 
     // ----------------------------------------------------------
@@ -519,15 +507,11 @@ const getGovernmentProblems = async (
     // FETCH
     // ----------------------------------------------------------
 
-    const problems =
-      await Problem.find(filter)
-        .sort({
-          createdAt: -1,
-        })
-        .populate(
-          "reportedBy",
-          "name email"
-        );
+    const problems = await Problem.find(filter)
+      .sort({
+        createdAt: -1,
+      })
+      .populate("reportedBy", "name email");
 
     return res.status(200).json({
       success: true,
@@ -535,15 +519,11 @@ const getGovernmentProblems = async (
       problems,
     });
   } catch (error) {
-    console.error(
-      "Get government problems error:",
-      error
-    );
+    console.error("Get government problems error:", error);
 
     return res.status(500).json({
       success: false,
-      message:
-        "Unable to fetch government problems.",
+      message: "Unable to fetch government problems.",
       error: error.message,
     });
   }
@@ -552,14 +532,8 @@ const getGovernmentProblems = async (
 // ============================================================
 // GET PUBLIC PROBLEM OVERVIEW
 // ============================================================
-// This endpoint is used by the public JAN-SAMADHAN landing page.
-// It does NOT expose citizen identity/contact information.
-// ============================================================
 
-const getPublicProblemOverview = async (
-  req,
-  res
-) => {
+const getPublicProblemOverview = async (req, res) => {
   try {
     const [
       statusStats,
@@ -599,10 +573,7 @@ const getPublicProblemOverview = async (
               $sum: {
                 $cond: [
                   {
-                    $eq: [
-                      "$status",
-                      "Pending",
-                    ],
+                    $eq: ["$status", "Pending"],
                   },
                   1,
                   0,
@@ -614,10 +585,7 @@ const getPublicProblemOverview = async (
               $sum: {
                 $cond: [
                   {
-                    $eq: [
-                      "$status",
-                      "Under Review",
-                    ],
+                    $eq: ["$status", "Under Review"],
                   },
                   1,
                   0,
@@ -629,10 +597,7 @@ const getPublicProblemOverview = async (
               $sum: {
                 $cond: [
                   {
-                    $eq: [
-                      "$status",
-                      "Validated",
-                    ],
+                    $eq: ["$status", "Validated"],
                   },
                   1,
                   0,
@@ -644,10 +609,7 @@ const getPublicProblemOverview = async (
               $sum: {
                 $cond: [
                   {
-                    $eq: [
-                      "$status",
-                      "In Progress",
-                    ],
+                    $eq: ["$status", "In Progress"],
                   },
                   1,
                   0,
@@ -659,10 +621,7 @@ const getPublicProblemOverview = async (
               $sum: {
                 $cond: [
                   {
-                    $eq: [
-                      "$status",
-                      "Resolved",
-                    ],
+                    $eq: ["$status", "Resolved"],
                   },
                   1,
                   0,
@@ -674,10 +633,7 @@ const getPublicProblemOverview = async (
               $sum: {
                 $cond: [
                   {
-                    $eq: [
-                      "$status",
-                      "Rejected",
-                    ],
+                    $eq: ["$status", "Rejected"],
                   },
                   1,
                   0,
@@ -689,10 +645,7 @@ const getPublicProblemOverview = async (
               $sum: {
                 $cond: [
                   {
-                    $eq: [
-                      "$status",
-                      "Duplicate",
-                    ],
+                    $eq: ["$status", "Duplicate"],
                   },
                   1,
                   0,
@@ -720,12 +673,8 @@ const getPublicProblemOverview = async (
             resolutionRate: {
               $cond: [
                 {
-                  $gt: [
-                    "$total",
-                    0,
-                  ],
+                  $gt: ["$total", 0],
                 },
-
                 {
                   $round: [
                     {
@@ -742,7 +691,6 @@ const getPublicProblemOverview = async (
                     1,
                   ],
                 },
-
                 0,
               ],
             },
@@ -789,9 +737,6 @@ const getPublicProblemOverview = async (
 
       // --------------------------------------------------------
       // RECENT PUBLIC PROBLEMS
-      // --------------------------------------------------------
-      // Only safe public fields are returned.
-      // Citizen name/email/phone are NOT exposed.
       // --------------------------------------------------------
 
       Problem.find(
@@ -885,12 +830,11 @@ const getPublicProblemOverview = async (
     stats.resolutionRate =
       stats.total > 0
         ? Number(
-          (
-            (stats.resolved /
-              stats.total) *
-            100
-          ).toFixed(1)
-        )
+            (
+              (stats.resolved / stats.total) *
+              100
+            ).toFixed(1)
+          )
         : 0;
 
     // ----------------------------------------------------------
@@ -912,8 +856,7 @@ const getPublicProblemOverview = async (
 
     return res.status(500).json({
       success: false,
-      message:
-        "Unable to load public civic data.",
+      message: "Unable to load public civic data.",
     });
   }
 };
@@ -931,16 +874,12 @@ const getProblemById = async (req, res) => {
       });
     }
 
-    const problem =
-      await Problem.findById(req.params.id)
-        .populate(
-          "reportedBy",
-          "name email phone"
-        )
-        .populate(
-          "activity.performedBy",
-          "name email role"
-        );
+    const problem = await Problem.findById(req.params.id)
+      .populate("reportedBy", "name email phone")
+      .populate(
+        "activity.performedBy",
+        "name email role"
+      );
 
     if (!problem) {
       return res.status(404).json({
@@ -995,8 +934,7 @@ const getProblemById = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message:
-        "Failed to fetch problem.",
+      message: "Failed to fetch problem.",
       error: error.message,
     });
   }
@@ -1038,10 +976,9 @@ const updateGovernmentProblem = async (
     // FIND PROBLEM
     // ----------------------------------------------------------
 
-    const problem =
-      await Problem.findById(
-        req.params.id
-      );
+    const problem = await Problem.findById(
+      req.params.id
+    );
 
     if (!problem) {
       return res.status(404).json({
@@ -1051,7 +988,7 @@ const updateGovernmentProblem = async (
     }
 
     // ----------------------------------------------------------
-    // VALIDATE INPUTS BEFORE CHANGING ANYTHING
+    // VALIDATE INPUTS
     // ----------------------------------------------------------
 
     if (
@@ -1150,10 +1087,7 @@ const updateGovernmentProblem = async (
     // DEPARTMENT CORRECTION
     // ----------------------------------------------------------
 
-    if (
-      governmentDepartment !==
-      undefined
-    ) {
+    if (governmentDepartment !== undefined) {
       const newDepartment =
         governmentDepartment || undefined;
 
@@ -1167,8 +1101,9 @@ const updateGovernmentProblem = async (
         problem.activity.push({
           action: "DEPARTMENT_CORRECTED",
           description: newDepartment
-            ? `Government corrected the department from ${oldDepartment || "Unassigned"
-            } to ${newDepartment}.`
+            ? `Government corrected the department from ${
+                oldDepartment || "Unassigned"
+              } to ${newDepartment}.`
             : "Government removed the assigned department.",
           performedBy: req.user._id,
           metadata: {
@@ -1189,8 +1124,7 @@ const updateGovernmentProblem = async (
 
     if (
       validationStatus !== undefined &&
-      validationStatus !==
-      oldValidationStatus
+      validationStatus !== oldValidationStatus
     ) {
       problem.validationStatus =
         validationStatus;
@@ -1263,9 +1197,7 @@ const updateGovernmentProblem = async (
     // DUPLICATE REFERENCE
     // ----------------------------------------------------------
 
-    if (
-      duplicateOf !== undefined
-    ) {
+    if (duplicateOf !== undefined) {
       problem.duplicateOf =
         duplicateOf || undefined;
     }
@@ -1281,9 +1213,7 @@ const updateGovernmentProblem = async (
     // ----------------------------------------------------------
 
     const updatedProblem =
-      await Problem.findById(
-        problem._id
-      )
+      await Problem.findById(problem._id)
         .populate(
           "reportedBy",
           "name email"

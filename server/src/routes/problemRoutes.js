@@ -33,20 +33,6 @@ router.post(
 // ============================================================
 // PUBLIC CIVIC DATA
 // ============================================================
-//
-// Exact routes must be registered before dynamic routes like
-// "/:id" to avoid route shadowing.
-//
-// No authentication required.
-//
-// Used by:
-// - JAN-SAMADHAN landing page
-// - Public Jharkhand district map
-// - Public statistics
-// - Public category statistics
-// - Recent public complaints
-//
-// ============================================================
 
 router.get("/public", getPublicProblemOverview);
 router.get("/public/overview", getPublicProblemOverview);
@@ -86,12 +72,6 @@ router.patch(
 
 // ============================================================
 // GET PROBLEM DETAILS
-// ============================================================
-//
-// Authentication required.
-// Controller decides whether the logged-in user
-// is allowed to view the problem.
-//
 // ============================================================
 
 router.get(
