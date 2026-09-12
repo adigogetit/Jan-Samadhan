@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -31,13 +31,13 @@ const LIFECYCLE_STEPS = [
 ];
 
 const statusStyles = {
-  Planning: "bg-slate-100 text-slate-700 border-slate-200",
-  Development: "bg-blue-50 text-blue-700 border-blue-200",
-  Testing: "bg-amber-50 text-amber-700 border-amber-200",
-  Pilot: "bg-purple-50 text-purple-700 border-purple-200",
-  Deployment: "bg-cyan-50 text-cyan-700 border-cyan-200",
-  Completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  Cancelled: "bg-red-50 text-red-700 border-red-200",
+  Planning: "bg-[#F3F7F5] text-[#5C7067] border border-[#DDE8E2]",
+  Development: "bg-[#EAF7F0] text-[#246748] border border-[#CBE8D7]",
+  Testing: "bg-[#FFF6E5] text-[#A46308] border border-[#F6D99D]",
+  Pilot: "bg-[#EAF7F0] text-[#246748] border border-[#CBE8D7]",
+  Deployment: "bg-[#EAF7F0] text-[#246748] border border-[#CBE8D7]",
+  Completed: "bg-[#EAF7F0] text-[#246748] border border-[#CBE8D7]",
+  Cancelled: "bg-[#FFF0F0] text-[#B42318] border border-[#F3C5C5]",
 };
 
 const formatDate = (date) => {
@@ -102,7 +102,7 @@ export default function StudentProjectDetails() {
       } else {
         setError(
           err.response?.data?.message ||
-            "Unable to load project details. Please try again."
+          "Unable to load project details. Please try again."
         );
       }
     } finally {
@@ -134,7 +134,7 @@ export default function StudentProjectDetails() {
       console.error("Accept assignment error:", err);
       setAcceptError(
         err.response?.data?.message ||
-          "Unable to accept project assignment. Please try again."
+        "Unable to accept project assignment. Please try again."
       );
     } finally {
       setAccepting(false);
@@ -158,12 +158,12 @@ export default function StudentProjectDetails() {
   // 403 Access Denied State
   if (isUnauthorized) {
     return (
-      <div className="min-h-[calc(100vh-64px)] bg-slate-50 p-6 md:p-12">
+      <div className="min-h-[calc(100vh-64px)] bg-[#F7FBF8] p-6 md:p-12">
         <div className="mx-auto max-w-lg rounded-3xl border border-red-200 bg-white p-8 text-center shadow-md">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-red-100 text-red-600">
             <XCircle size={36} />
           </div>
-          <h2 className="mt-4 text-xl font-bold text-[#172B3A]">
+          <h2 className="mt-4 text-xl font-bold text-[#18352A]">
             Access Denied
           </h2>
           <p className="mt-2 text-sm text-slate-600">
@@ -171,7 +171,7 @@ export default function StudentProjectDetails() {
           </p>
           <Link
             to="/student/projects"
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#172B3A] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#23445A]"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#18352A] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#23445A]"
           >
             <ArrowLeft size={16} /> Return to My Projects
           </Link>
@@ -183,7 +183,7 @@ export default function StudentProjectDetails() {
   // Loading State
   if (loading) {
     return (
-      <div className="min-h-[calc(100vh-64px)] bg-slate-50 p-6 md:p-8">
+      <div className="min-h-[calc(100vh-64px)] bg-[#F7FBF8] p-6 md:p-8">
         <div className="mx-auto max-w-7xl animate-pulse space-y-6">
           <div className="h-8 w-48 rounded bg-slate-200" />
           <div className="h-32 rounded-2xl bg-white p-6" />
@@ -199,10 +199,10 @@ export default function StudentProjectDetails() {
   // Error State
   if (error || !project) {
     return (
-      <div className="min-h-[calc(100vh-64px)] bg-slate-50 p-6 md:p-12">
+      <div className="min-h-[calc(100vh-64px)] bg-[#F7FBF8] p-6 md:p-12">
         <div className="mx-auto max-w-md rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
           <AlertCircle size={36} className="mx-auto text-amber-500" />
-          <h2 className="mt-3 text-lg font-bold text-[#172B3A]">
+          <h2 className="mt-3 text-lg font-bold text-[#18352A]">
             Project Unavailable
           </h2>
           <p className="mt-2 text-sm text-slate-500">
@@ -210,7 +210,7 @@ export default function StudentProjectDetails() {
           </p>
           <Link
             to="/student/projects"
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#172B3A] px-5 py-2.5 text-xs font-semibold text-white transition hover:bg-[#23445A]"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#18352A] px-5 py-2.5 text-xs font-semibold text-white transition hover:bg-[#23445A]"
           >
             <ArrowLeft size={14} /> Back to Projects
           </Link>
@@ -225,7 +225,7 @@ export default function StudentProjectDetails() {
   const myAcceptanceStatus = hasAccepted();
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-slate-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-[calc(100vh-64px)] bg-[#F7FBF8] p-4 md:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl space-y-6">
 
         {/* =====================================================
@@ -234,16 +234,15 @@ export default function StudentProjectDetails() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <Link
             to="/student/projects"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-[#F7FBF8]"
           >
             <ArrowLeft size={14} /> Back to My Projects
           </Link>
 
           <div className="flex items-center gap-2">
             <span
-              className={`rounded-full border px-3 py-1 text-xs font-semibold ${
-                statusStyles[project.status] || "bg-slate-100 text-slate-700"
-              }`}
+              className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusStyles[project.status] || "bg-slate-100 text-slate-700"
+                }`}
             >
               Status: {project.status}
             </span>
@@ -334,7 +333,7 @@ export default function StudentProjectDetails() {
                 </span>
               </div>
 
-              <h1 className="text-2xl font-bold text-[#172B3A] md:text-3xl">
+              <h1 className="text-2xl font-bold text-[#18352A] md:text-3xl">
                 {project.title}
               </h1>
 
@@ -363,9 +362,9 @@ export default function StudentProjectDetails() {
           {/* Objective & Proposed Solution */}
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             {project.objective && (
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+              <div className="rounded-2xl border border-slate-100 bg-[#F7FBF8] p-4">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-                  <Target size={14} className="text-[#1F6F8B]" />
+                  <Target size={14} className="text-[#2E7D5B]" />
                   <span>Objective</span>
                 </div>
                 <p className="mt-2 text-xs leading-relaxed text-slate-700">
@@ -375,7 +374,7 @@ export default function StudentProjectDetails() {
             )}
 
             {project.proposedSolution && (
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+              <div className="rounded-2xl border border-slate-100 bg-[#F7FBF8] p-4">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
                   <Lightbulb size={14} className="text-amber-500" />
                   <span>Proposed Solution</span>
@@ -418,14 +417,14 @@ export default function StudentProjectDetails() {
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-base font-bold text-[#172B3A]">
+              <h2 className="text-base font-bold text-[#18352A]">
                 Project Lifecycle & Progression
               </h2>
               <p className="text-xs text-slate-500">
                 Monitored by University Administration · Current stage: <strong className="text-slate-700">{project.status}</strong>
               </p>
             </div>
-            <div className="inline-flex items-center gap-1.5 text-[11px] text-slate-400 bg-slate-50 px-2.5 py-1 rounded-lg">
+            <div className="inline-flex items-center gap-1.5 text-[11px] text-slate-400 bg-[#F7FBF8] px-2.5 py-1 rounded-lg">
               <Info size={12} /> Student View Mode (Read Only)
             </div>
           </div>
@@ -451,34 +450,31 @@ export default function StudentProjectDetails() {
                   return (
                     <div
                       key={step}
-                      className={`relative flex flex-col items-center rounded-2xl border p-4 text-center transition ${
-                        isCurrent
-                          ? "border-[#1F6F8B] bg-blue-50/50 shadow-sm ring-2 ring-[#1F6F8B]/20"
+                      className={`relative flex flex-col items-center rounded-2xl border p-4 text-center transition ${isCurrent
+                          ? "border-[#2E7D5B] bg-blue-50/50 shadow-sm ring-2 ring-[#2E7D5B]/20"
                           : isPassed
-                          ? "border-emerald-200 bg-emerald-50/30"
-                          : "border-slate-200 bg-slate-50/50 opacity-60"
-                      }`}
+                            ? "border-emerald-200 bg-emerald-50/30"
+                            : "border-slate-200 bg-[#F7FBF8]/50 opacity-60"
+                        }`}
                     >
                       <div
-                        className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
-                          isCurrent
-                            ? "bg-[#1F6F8B] text-white animate-pulse"
+                        className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${isCurrent
+                            ? "bg-[#2E7D5B] text-white animate-pulse"
                             : isPassed
-                            ? "bg-emerald-600 text-white"
-                            : "bg-slate-200 text-slate-600"
-                        }`}
+                              ? "bg-emerald-600 text-white"
+                              : "bg-slate-200 text-slate-600"
+                          }`}
                       >
                         {isPassed ? <CheckCircle2 size={16} /> : idx + 1}
                       </div>
 
                       <p
-                        className={`mt-2 text-xs font-bold ${
-                          isCurrent
-                            ? "text-[#1F6F8B]"
+                        className={`mt-2 text-xs font-bold ${isCurrent
+                            ? "text-[#2E7D5B]"
                             : isPassed
-                            ? "text-emerald-800"
-                            : "text-slate-600"
-                        }`}
+                              ? "text-emerald-800"
+                              : "text-slate-600"
+                          }`}
                       >
                         {step}
                       </p>
@@ -505,8 +501,8 @@ export default function StudentProjectDetails() {
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div className="flex items-center gap-2">
-                  <FileText size={18} className="text-[#1F6F8B]" />
-                  <h2 className="text-base font-bold text-[#172B3A]">
+                  <FileText size={18} className="text-[#2E7D5B]" />
+                  <h2 className="text-base font-bold text-[#18352A]">
                     Source Civic Problem
                   </h2>
                 </div>
@@ -516,7 +512,7 @@ export default function StudentProjectDetails() {
               </div>
 
               <div className="mt-4 space-y-3">
-                <h3 className="text-lg font-bold text-[#172B3A]">
+                <h3 className="text-lg font-bold text-[#18352A]">
                   {problem.title || "Problem information unavailable"}
                 </h3>
 
@@ -552,14 +548,14 @@ export default function StudentProjectDetails() {
             {/* Activity Timeline (Requirement 7) */}
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-center gap-2 border-b border-slate-100 pb-4">
-                <History size={18} className="text-[#1F6F8B]" />
-                <h2 className="text-base font-bold text-[#172B3A]">
+                <History size={18} className="text-[#2E7D5B]" />
+                <h2 className="text-base font-bold text-[#18352A]">
                   Activity Timeline
                 </h2>
               </div>
 
               {Array.isArray(project.activityTimeline) &&
-              project.activityTimeline.length > 0 ? (
+                project.activityTimeline.length > 0 ? (
                 <div className="mt-6 flow-root">
                   <ul className="-mb-8">
                     {project.activityTimeline.map((item, idx) => {
@@ -581,7 +577,7 @@ export default function StudentProjectDetails() {
                               </div>
                               <div className="min-w-0 flex-1 pt-0.5">
                                 <div className="flex flex-wrap items-center justify-between gap-1">
-                                  <p className="text-xs font-bold text-[#172B3A]">
+                                  <p className="text-xs font-bold text-[#18352A]">
                                     {item.action}
                                   </p>
                                   <span className="text-[11px] text-slate-400">
@@ -619,8 +615,8 @@ export default function StudentProjectDetails() {
             {/* Faculty Lead Card */}
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-center gap-2 border-b border-slate-100 pb-4">
-                <UserCheck size={18} className="text-[#1F6F8B]" />
-                <h2 className="text-base font-bold text-[#172B3A]">
+                <UserCheck size={18} className="text-[#2E7D5B]" />
+                <h2 className="text-base font-bold text-[#18352A]">
                   Faculty Lead
                 </h2>
               </div>
@@ -628,11 +624,11 @@ export default function StudentProjectDetails() {
               {project.facultyLead ? (
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 font-bold text-[#1F6F8B]">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 font-bold text-[#2E7D5B]">
                       {project.facultyLead.name?.charAt(0)?.toUpperCase() || "F"}
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-[#172B3A]">
+                      <h3 className="text-sm font-bold text-[#18352A]">
                         {project.facultyLead.name}
                       </h3>
                       <p className="text-xs text-slate-500">
@@ -642,7 +638,7 @@ export default function StudentProjectDetails() {
                   </div>
 
                   {project.facultyLead.department && (
-                    <div className="mt-3 rounded-xl bg-slate-50 p-2.5 text-xs text-slate-600">
+                    <div className="mt-3 rounded-xl bg-[#F7FBF8] p-2.5 text-xs text-slate-600">
                       <span className="text-slate-400">Department: </span>
                       <span className="font-semibold text-slate-700">
                         {project.facultyLead.department}
@@ -651,7 +647,7 @@ export default function StudentProjectDetails() {
                   )}
                 </div>
               ) : (
-                <div className="mt-4 rounded-2xl bg-slate-50 p-4 text-center">
+                <div className="mt-4 rounded-2xl bg-[#F7FBF8] p-4 text-center">
                   <p className="text-xs text-slate-500">
                     Faculty lead has not been assigned yet.
                   </p>
@@ -663,8 +659,8 @@ export default function StudentProjectDetails() {
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div className="flex items-center gap-2">
-                  <Users size={18} className="text-[#1F6F8B]" />
-                  <h2 className="text-base font-bold text-[#172B3A]">
+                  <Users size={18} className="text-[#2E7D5B]" />
+                  <h2 className="text-base font-bold text-[#18352A]">
                     Student Team
                   </h2>
                 </div>
@@ -675,7 +671,7 @@ export default function StudentProjectDetails() {
 
               <div className="mt-4 space-y-3">
                 {Array.isArray(project.students) &&
-                project.students.length > 0 ? (
+                  project.students.length > 0 ? (
                   project.students.map((student) => {
                     const isMe =
                       (student._id || student).toString() ===
@@ -685,19 +681,18 @@ export default function StudentProjectDetails() {
                     return (
                       <div
                         key={student._id || student}
-                        className={`flex items-start justify-between rounded-2xl border p-3 text-xs transition ${
-                          isMe
-                            ? "border-[#1F6F8B]/40 bg-blue-50/40"
-                            : "border-slate-100 bg-slate-50"
-                        }`}
+                        className={`flex items-start justify-between rounded-2xl border p-3 text-xs transition ${isMe
+                            ? "border-[#2E7D5B]/40 bg-blue-50/40"
+                            : "border-slate-100 bg-[#F7FBF8]"
+                          }`}
                       >
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-1.5">
-                            <p className="font-bold text-[#172B3A]">
+                            <p className="font-bold text-[#18352A]">
                               {student.name || "Student"}
                             </p>
                             {isMe && (
-                              <span className="rounded bg-[#172B3A] px-1.5 py-0.2 text-[10px] font-bold text-white">
+                              <span className="rounded bg-[#18352A] px-1.5 py-0.2 text-[10px] font-bold text-white">
                                 You
                               </span>
                             )}

@@ -17,6 +17,7 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 import api from "../../services/api";
+import PageHeader from "../../components/ui/PageHeader";
 
 // Leaflet marker fix for Vite
 delete L.Icon.Default.prototype._getIconUrl;
@@ -980,563 +981,561 @@ export default function SubmitProblem() {
   // ============================================================
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      {/* HEADER */}
+    <div className="min-h-full bg-[#F7FBF8] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mx-auto max-w-5xl">
+        {/* HEADER */}
+        <PageHeader
+          eyebrow="Citizen Portal"
+          title="Report a Civic Problem"
+          description="Bring local issues to the attention of government authorities and university innovators for rapid resolution"
+          backPath="/citizen/dashboard"
+          backLabel="Back to Dashboard"
+        />
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-text">
-          Report a Problem
-        </h1>
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6"
+        >
+          {/* ================================================== */}
+          {/* PROBLEM INFORMATION */}
+          {/* ================================================== */}
 
-        <p className="mt-2 text-text-secondary">
-          Help improve your community by
-          reporting a problem.
-        </p>
-      </div>
+          <div className="rounded-[26px] border border-[#DDEDE4] bg-white p-6 sm:p-8 shadow-[0_8px_30px_rgba(24,53,42,0.045)]">
+            <h2 className="text-lg font-extrabold text-[#18352A] mb-1">
+              Problem Information
+            </h2>
+            <p className="text-xs text-[#789087] mb-6">
+              Provide clear details about the civic grievance
+            </p>
 
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-8"
-      >
-        {/* ================================================== */}
-        {/* PROBLEM INFORMATION */}
-        {/* ================================================== */}
+            <div className="space-y-5">
+              {/* Title */}
 
-        <div className="bg-white border border-border rounded-2xl p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-text mb-6">
-            Problem Information
-          </h2>
+              <div>
+                <label className="block text-sm font-medium text-text mb-2">
+                  Problem Title *
+                </label>
 
-          <div className="space-y-5">
-            {/* Title */}
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  placeholder="Example: Large pothole near main road"
+                  maxLength={150}
+                  className="w-full px-4 py-3 border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-text mb-2">
-                Problem Title *
-              </label>
+              {/* Description */}
 
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                placeholder="Example: Large pothole near main road"
-                maxLength={150}
-                className="w-full px-4 py-3 border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary"
-              />
+              <div>
+                <label className="block text-sm font-medium text-text mb-2">
+                  Description *
+                </label>
+
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Describe the problem in detail..."
+                  rows={5}
+                  maxLength={5000}
+                  className="w-full px-4 py-3 border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary resize-none"
+                />
+
+                <p className="text-xs text-text-secondary mt-1">
+                  {formData.description.length}
+                  /5000
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          {/* ================================================== */}
+          {/* LOCATION */}
+          {/* ================================================== */}
+
+          <div className="rounded-[26px] border border-[#DDEDE4] bg-white p-6 sm:p-8 shadow-[0_8px_30px_rgba(24,53,42,0.045)]">
+            <h2 className="text-lg font-extrabold text-[#18352A] mb-1">
+              Problem Location
+            </h2>
+
+            <p className="text-xs text-[#789087] mb-6">
+              First select your district and block. The map will automatically
+              move to that area. Then pin the exact problem location.
+            </p>
+
+            {/* DISTRICT + BLOCK */}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* District */}
+
+              <div>
+                <label className="block text-sm font-medium text-text mb-2">
+                  District *
+                </label>
+
+                <select
+                  name="district"
+                  value={formData.district}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary bg-white"
+                >
+                  <option value="">
+                    Select district
+                  </option>
+
+                  {districts.map((district) => (
+                    <option
+                      key={district}
+                      value={district}
+                    >
+                      {displayDistrictName(
+                        district
+                      )}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Block */}
+
+              <div>
+                <label className="block text-sm font-medium text-text mb-2">
+                  Block *
+                </label>
+
+                <select
+                  name="block"
+                  value={formData.block}
+                  onChange={handleChange}
+                  disabled={!formData.district}
+                  className="w-full px-4 py-3 border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary bg-white disabled:bg-gray-100 disabled:text-gray-400"
+                >
+                  <option value="">
+                    {formData.district
+                      ? "Select block"
+                      : "Select district first"}
+                  </option>
+
+                  {availableBlocks.map((block) => (
+                    <option
+                      key={block}
+                      value={block}
+                    >
+                      {block}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            {/* Description */}
+            {/* SELECTED AREA MESSAGE */}
 
-            <div>
+            {formData.district &&
+              formData.block && (
+                <div className="mt-5 p-4 rounded-xl bg-blue-50 border border-blue-200">
+                  <p className="text-sm text-blue-800">
+                    📍 Showing{" "}
+                    <strong>
+                      {formData.block}
+                    </strong>
+                    ,{" "}
+                    <strong>
+                      {displayDistrictName(
+                        formData.district
+                      )}
+                    </strong>
+                    .
+                  </p>
+
+                  <p className="text-xs text-blue-700 mt-1">
+                    Click on the map to select
+                    the exact location of the
+                    problem.
+                  </p>
+                </div>
+              )}
+
+            {/* SEARCH + CURRENT LOCATION */}
+
+            <div className="mt-5">
+              <div className="flex flex-col md:flex-row gap-2">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) =>
+                    setSearchQuery(e.target.value)
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSearch();
+                    }
+                  }}
+                  placeholder="Search road, landmark, village..."
+                  className="flex-1 px-4 py-3 border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary"
+                />
+
+                <button
+                  type="button"
+                  onClick={handleSearch}
+                  disabled={
+                    searchLoading ||
+                    !searchQuery.trim()
+                  }
+                  className="px-5 py-3 rounded-xl border border-border bg-gray-50 hover:bg-gray-100 disabled:opacity-50 font-medium"
+                >
+                  {searchLoading
+                    ? "Searching..."
+                    : "Search"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={
+                    handleCurrentLocation
+                  }
+                  disabled={locationLoading}
+                  className="px-5 py-3 rounded-xl bg-primary text-white font-medium hover:opacity-90 disabled:opacity-60"
+                >
+                  {locationLoading
+                    ? "Finding..."
+                    : "📍 Current Location"}
+                </button>
+              </div>
+
+              {/* SEARCH RESULTS */}
+
+              {searchResults.length > 0 && (
+                <div className="relative z-[1000] mt-2 bg-white border border-border rounded-xl shadow-lg overflow-hidden">
+                  {searchResults.map(
+                    (result, index) => (
+                      <button
+                        key={`${result.place_id}-${index}`}
+                        type="button"
+                        onClick={() =>
+                          handleSearchResult(
+                            result
+                          )
+                        }
+                        className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-border last:border-b-0"
+                      >
+                        <p className="text-sm text-text">
+                          {
+                            result.display_name
+                          }
+                        </p>
+                      </button>
+                    )
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* LOCATION ERROR */}
+
+            {locationError && (
+              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+                {locationError}
+              </div>
+            )}
+
+            {/* MAP */}
+
+            <div className="mt-5 rounded-2xl overflow-hidden border border-border">
+              <MapContainer
+                center={DEFAULT_POSITION}
+                zoom={10}
+                scrollWheelZoom={true}
+                style={{
+                  height: "450px",
+                  width: "100%",
+                }}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+
+                <LocationClickHandler
+                  onLocationChange={
+                    updateLocation
+                  }
+                />
+
+                <MapController
+                  position={selectedPosition}
+                  zoom={mapZoom}
+                />
+
+                {selectedPosition && (
+                  <Marker
+                    position={selectedPosition}
+                    draggable={true}
+                    eventHandlers={{
+                      dragend: async (event) => {
+                        const marker =
+                          event.target;
+
+                        const position =
+                          marker.getLatLng();
+
+                        await updateLocation(
+                          position.lat,
+                          position.lng,
+                          true
+                        );
+                      },
+                    }}
+                  >
+                    <Popup>
+                      <div className="text-sm">
+                        <strong>
+                          Problem Location
+                        </strong>
+
+                        <br />
+
+                        Drag this pin to
+                        adjust the exact
+                        location.
+                      </div>
+                    </Popup>
+                  </Marker>
+                )}
+              </MapContainer>
+            </div>
+
+            {/* MAP INSTRUCTION */}
+
+            <div className="mt-4 p-4 rounded-xl bg-gray-50 border border-border">
+              <p className="text-sm font-medium text-text">
+                📌 Pin the exact location
+              </p>
+
+              <p className="text-xs text-text-secondary mt-1">
+                Click directly on the map where
+                the problem exists. You can also
+                drag the pin to fine-tune it.
+              </p>
+            </div>
+
+            {/* ADDRESS */}
+
+            <div className="mt-5">
               <label className="block text-sm font-medium text-text mb-2">
-                Description *
+                Detected Address
               </label>
 
               <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                placeholder="Describe the problem in detail..."
-                rows={5}
-                maxLength={5000}
+                value={formData.address}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    address: e.target.value,
+                  }))
+                }
+                placeholder="Address will appear after selecting the exact location."
+                rows={3}
                 className="w-full px-4 py-3 border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary resize-none"
               />
-
-              <p className="text-xs text-text-secondary mt-1">
-                {formData.description.length}
-                /5000
-              </p>
             </div>
 
-          </div>
-        </div>
+            {/* COORDINATES */}
 
-        {/* ================================================== */}
-        {/* LOCATION */}
-        {/* ================================================== */}
+            {selectedPosition && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="p-4 rounded-xl bg-gray-50 border border-border">
+                  <p className="text-xs text-text-secondary">
+                    Latitude
+                  </p>
 
-        <div className="bg-white border border-border rounded-2xl p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-text mb-2">
-            Problem Location
-          </h2>
+                  <p className="font-medium text-text mt-1">
+                    {Number(
+                      formData.latitude
+                    ).toFixed(6)}
+                  </p>
+                </div>
 
-          <p className="text-sm text-text-secondary mb-6">
-            First select your district and
-            block. The map will automatically
-            move to that area. Then pin the exact
-            problem location.
-          </p>
+                <div className="p-4 rounded-xl bg-gray-50 border border-border">
+                  <p className="text-xs text-text-secondary">
+                    Longitude
+                  </p>
 
-          {/* DISTRICT + BLOCK */}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* District */}
-
-            <div>
-              <label className="block text-sm font-medium text-text mb-2">
-                District *
-              </label>
-
-              <select
-                name="district"
-                value={formData.district}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary bg-white"
-              >
-                <option value="">
-                  Select district
-                </option>
-
-                {districts.map((district) => (
-                  <option
-                    key={district}
-                    value={district}
-                  >
-                    {displayDistrictName(
-                      district
-                    )}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Block */}
-
-            <div>
-              <label className="block text-sm font-medium text-text mb-2">
-                Block *
-              </label>
-
-              <select
-                name="block"
-                value={formData.block}
-                onChange={handleChange}
-                disabled={!formData.district}
-                className="w-full px-4 py-3 border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary bg-white disabled:bg-gray-100 disabled:text-gray-400"
-              >
-                <option value="">
-                  {formData.district
-                    ? "Select block"
-                    : "Select district first"}
-                </option>
-
-                {availableBlocks.map((block) => (
-                  <option
-                    key={block}
-                    value={block}
-                  >
-                    {block}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* SELECTED AREA MESSAGE */}
-
-          {formData.district &&
-            formData.block && (
-              <div className="mt-5 p-4 rounded-xl bg-blue-50 border border-blue-200">
-                <p className="text-sm text-blue-800">
-                  📍 Showing{" "}
-                  <strong>
-                    {formData.block}
-                  </strong>
-                  ,{" "}
-                  <strong>
-                    {displayDistrictName(
-                      formData.district
-                    )}
-                  </strong>
-                  .
-                </p>
-
-                <p className="text-xs text-blue-700 mt-1">
-                  Click on the map to select
-                  the exact location of the
-                  problem.
-                </p>
+                  <p className="font-medium text-text mt-1">
+                    {Number(
+                      formData.longitude
+                    ).toFixed(6)}
+                  </p>
+                </div>
               </div>
             )}
+          </div>
 
-          {/* SEARCH + CURRENT LOCATION */}
+          {/* ================================================== */}
+          {/* EVIDENCE */}
+          {/* ================================================== */}
 
-          <div className="mt-5">
-            <div className="flex flex-col md:flex-row gap-2">
+          {/* ================================================== */}
+          {/* EVIDENCE */}
+          {/* ================================================== */}
+
+          <div className="rounded-[26px] border border-[#DDEDE4] bg-white p-6 sm:p-8 shadow-[0_8px_30px_rgba(24,53,42,0.045)]">
+            <h2 className="text-lg font-extrabold text-[#18352A] mb-1">
+              Evidence Attachments
+            </h2>
+
+            <p className="text-xs text-[#789087] mb-6">
+              Attach photos or videos documenting the real problem to aid AI analysis and administrative inspection.
+            </p>
+
+            {/* PHOTOS */}
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-[0.1em] text-[#526A5E] mb-2.5">
+                Photographic Evidence
+              </label>
+
               <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) =>
-                  setSearchQuery(e.target.value)
-                }
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleSearch();
-                  }
-                }}
-                placeholder="Search road, landmark, village..."
-                className="flex-1 px-4 py-3 border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary"
+                ref={imageInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                onChange={handleImageChange}
+                className="hidden"
               />
 
               <button
                 type="button"
-                onClick={handleSearch}
-                disabled={
-                  searchLoading ||
-                  !searchQuery.trim()
+                onClick={() =>
+                  imageInputRef.current?.click()
                 }
-                className="px-5 py-3 rounded-xl border border-border bg-gray-50 hover:bg-gray-100 disabled:opacity-50 font-medium"
+                className="w-full border-2 border-dashed border-[#CFE7D8] bg-[#FAFDFB] rounded-2xl p-8 hover:border-[#2E7D5B] hover:bg-[#F0F9F3] transition cursor-pointer text-center"
               >
-                {searchLoading
-                  ? "Searching..."
-                  : "Search"}
+                <div className="text-3xl mb-2">
+                  📷
+                </div>
+
+                <p className="text-sm font-extrabold text-[#18352A]">
+                  Click to upload photos
+                </p>
+
+                <p className="text-xs text-[#789087] mt-1">
+                  JPG, PNG or WEBP (Max 6 images)
+                </p>
               </button>
 
-              <button
-                type="button"
-                onClick={
-                  handleCurrentLocation
-                }
-                disabled={locationLoading}
-                className="px-5 py-3 rounded-xl bg-primary text-white font-medium hover:opacity-90 disabled:opacity-60"
-              >
-                {locationLoading
-                  ? "Finding..."
-                  : "📍 Current Location"}
-              </button>
-            </div>
+              {/* PHOTO PREVIEWS */}
 
-            {/* SEARCH RESULTS */}
-
-            {searchResults.length > 0 && (
-              <div className="relative z-[1000] mt-2 bg-white border border-border rounded-xl shadow-lg overflow-hidden">
-                {searchResults.map(
-                  (result, index) => (
-                    <button
-                      key={`${result.place_id}-${index}`}
-                      type="button"
-                      onClick={() =>
-                        handleSearchResult(
-                          result
-                        )
-                      }
-                      className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-border last:border-b-0"
-                    >
-                      <p className="text-sm text-text">
-                        {
-                          result.display_name
-                        }
-                      </p>
-                    </button>
-                  )
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* LOCATION ERROR */}
-
-          {locationError && (
-            <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
-              {locationError}
-            </div>
-          )}
-
-          {/* MAP */}
-
-          <div className="mt-5 rounded-2xl overflow-hidden border border-border">
-            <MapContainer
-              center={DEFAULT_POSITION}
-              zoom={10}
-              scrollWheelZoom={true}
-              style={{
-                height: "450px",
-                width: "100%",
-              }}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-
-              <LocationClickHandler
-                onLocationChange={
-                  updateLocation
-                }
-              />
-
-              <MapController
-                position={selectedPosition}
-                zoom={mapZoom}
-              />
-
-              {selectedPosition && (
-                <Marker
-                  position={selectedPosition}
-                  draggable={true}
-                  eventHandlers={{
-                    dragend: async (event) => {
-                      const marker =
-                        event.target;
-
-                      const position =
-                        marker.getLatLng();
-
-                      await updateLocation(
-                        position.lat,
-                        position.lng,
-                        true
-                      );
-                    },
-                  }}
-                >
-                  <Popup>
-                    <div className="text-sm">
-                      <strong>
-                        Problem Location
-                      </strong>
-
-                      <br />
-
-                      Drag this pin to
-                      adjust the exact
-                      location.
-                    </div>
-                  </Popup>
-                </Marker>
-              )}
-            </MapContainer>
-          </div>
-
-          {/* MAP INSTRUCTION */}
-
-          <div className="mt-4 p-4 rounded-xl bg-gray-50 border border-border">
-            <p className="text-sm font-medium text-text">
-              📌 Pin the exact location
-            </p>
-
-            <p className="text-xs text-text-secondary mt-1">
-              Click directly on the map where
-              the problem exists. You can also
-              drag the pin to fine-tune it.
-            </p>
-          </div>
-
-          {/* ADDRESS */}
-
-          <div className="mt-5">
-            <label className="block text-sm font-medium text-text mb-2">
-              Detected Address
-            </label>
-
-            <textarea
-              value={formData.address}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  address: e.target.value,
-                }))
-              }
-              placeholder="Address will appear after selecting the exact location."
-              rows={3}
-              className="w-full px-4 py-3 border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary resize-none"
-            />
-          </div>
-
-          {/* COORDINATES */}
-
-          {selectedPosition && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div className="p-4 rounded-xl bg-gray-50 border border-border">
-                <p className="text-xs text-text-secondary">
-                  Latitude
-                </p>
-
-                <p className="font-medium text-text mt-1">
-                  {Number(
-                    formData.latitude
-                  ).toFixed(6)}
-                </p>
-              </div>
-
-              <div className="p-4 rounded-xl bg-gray-50 border border-border">
-                <p className="text-xs text-text-secondary">
-                  Longitude
-                </p>
-
-                <p className="font-medium text-text mt-1">
-                  {Number(
-                    formData.longitude
-                  ).toFixed(6)}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* ================================================== */}
-        {/* EVIDENCE */}
-        {/* ================================================== */}
-
-        <div className="bg-white border border-border rounded-2xl p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-text">
-            Evidence
-          </h2>
-
-          <p className="text-sm text-text-secondary mt-1 mb-6">
-            Add photos or videos showing the
-            problem.
-          </p>
-
-          {/* PHOTOS */}
-
-          <div>
-            <label className="block text-sm font-medium text-text mb-3">
-              Photos
-            </label>
-
-            <input
-              ref={imageInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              onChange={handleImageChange}
-              className="hidden"
-            />
-
-            <button
-              type="button"
-              onClick={() =>
-                imageInputRef.current?.click()
-              }
-              className="w-full border-2 border-dashed border-border rounded-2xl p-8 hover:border-primary hover:bg-blue-50/30 transition cursor-pointer text-center"
-            >
-              <div className="text-4xl mb-3">
-                📷
-              </div>
-
-              <p className="font-semibold text-text">
-                Click to upload photos
-              </p>
-
-              <p className="text-sm text-text-secondary mt-1">
-                JPG, PNG or WEBP
-              </p>
-
-              <p className="text-xs text-text-secondary mt-2">
-                Maximum 6 images
-              </p>
-            </button>
-
-            {/* PHOTO PREVIEWS */}
-
-            {imagePreviews.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-5">
-                {imagePreviews.map(
-                  (preview, index) => (
-                    <div
-                      key={preview}
-                      className="relative aspect-video rounded-xl overflow-hidden border border-border bg-gray-100"
-                    >
-                      <img
-                        src={preview}
-                        alt={`Problem photo ${index + 1
-                          }`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* VIDEOS */}
-
-          <div className="mt-8">
-            <label className="block text-sm font-medium text-text mb-3">
-              Videos
-            </label>
-
-            <input
-              ref={videoInputRef}
-              type="file"
-              accept="video/mp4,video/quicktime,video/webm"
-              multiple
-              onChange={handleVideoChange}
-              className="hidden"
-            />
-
-            <button
-              type="button"
-              onClick={() =>
-                videoInputRef.current?.click()
-              }
-              className="w-full border-2 border-dashed border-border rounded-2xl p-8 hover:border-primary hover:bg-blue-50/30 transition cursor-pointer text-center"
-            >
-              <div className="text-4xl mb-3">
-                🎥
-              </div>
-
-              <p className="font-semibold text-text">
-                Click to upload videos
-              </p>
-
-              <p className="text-sm text-text-secondary mt-1">
-                MP4, MOV or WEBM
-              </p>
-
-              <p className="text-xs text-text-secondary mt-2">
-                Maximum 2 videos · Maximum 50MB
-                each
-              </p>
-            </button>
-
-            {/* VIDEO PREVIEWS */}
-
-            {videoPreviews.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-                {videoPreviews.map(
-                  (preview, index) => (
-                    <div
-                      key={preview}
-                      className="rounded-xl overflow-hidden border border-border bg-black"
-                    >
-                      <video
-                        src={preview}
-                        controls
-                        className="w-full aspect-video"
-                      />
-
-                      <div className="bg-gray-900 text-white px-3 py-2 text-xs">
-                        Video {index + 1}
+              {imagePreviews.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-5">
+                  {imagePreviews.map(
+                    (preview, index) => (
+                      <div
+                        key={preview}
+                        className="relative aspect-video rounded-xl overflow-hidden border border-[#DDEDE4] bg-[#FAFDFB]"
+                      >
+                        <img
+                          src={preview}
+                          alt={`Problem photo ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                    </div>
-                  )
-                )}
-              </div>
-            )}
+                    )
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* VIDEOS */}
+
+            <div className="mt-8 border-t border-[#EDF4F0] pt-6">
+              <label className="block text-xs font-bold uppercase tracking-[0.1em] text-[#526A5E] mb-2.5">
+                Video Evidence
+              </label>
+
+              <input
+                ref={videoInputRef}
+                type="file"
+                accept="video/mp4,video/quicktime,video/webm"
+                multiple
+                onChange={handleVideoChange}
+                className="hidden"
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  videoInputRef.current?.click()
+                }
+                className="w-full border-2 border-dashed border-[#CFE7D8] bg-[#FAFDFB] rounded-2xl p-8 hover:border-[#2E7D5B] hover:bg-[#F0F9F3] transition cursor-pointer text-center"
+              >
+                <div className="text-3xl mb-2">
+                  🎥
+                </div>
+
+                <p className="text-sm font-extrabold text-[#18352A]">
+                  Click to upload videos
+                </p>
+
+                <p className="text-xs text-[#789087] mt-1">
+                  MP4, MOV or WEBM (Max 2 videos · 50MB each)
+                </p>
+              </button>
+
+              {/* VIDEO PREVIEWS */}
+
+              {videoPreviews.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                  {videoPreviews.map(
+                    (preview, index) => (
+                      <div
+                        key={preview}
+                        className="rounded-xl overflow-hidden border border-[#DDEDE4] bg-black"
+                      >
+                        <video
+                          src={preview}
+                          controls
+                          className="w-full aspect-video"
+                        />
+
+                        <div className="bg-[#18352A] text-white px-3 py-1.5 text-xs font-semibold">
+                          Video {index + 1}
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* ================================================== */}
-        {/* SUBMIT */}
-        {/* ================================================== */}
+          {/* ================================================== */}
+          {/* SUBMIT */}
+          {/* ================================================== */}
 
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-8 py-3.5 rounded-xl bg-primary text-white font-semibold hover:opacity-90 disabled:opacity-60 transition"
-          >
-            {loading
-              ? "Submitting..."
-              : "Report Problem"}
-          </button>
-        </div>
-      </form>
+          <div className="flex items-center justify-end gap-3 pb-8">
+            <button
+              type="button"
+              onClick={() => navigate("/citizen/dashboard")}
+              className="rounded-xl border border-[#DDEDE4] bg-white px-6 py-3.5 text-sm font-bold text-[#60756B] transition hover:bg-[#F2F8F4]"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="rounded-xl bg-[#2E7D5B] px-8 py-3.5 text-sm font-extrabold text-white shadow-[0_8px_20px_rgba(46,125,91,0.18)] transition hover:bg-[#246748] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loading ? "Submitting to AI Pipeline..." : "Report Problem"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-﻿const express = require("express");
+const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
@@ -9,6 +9,7 @@ const universityRoutes = require("./routes/universityRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 const investorRoutes = require("./routes/investorRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 
 require("dotenv").config();
 
@@ -40,6 +41,7 @@ app.use("/api/university", universityRoutes);
 app.use("/api/university/projects", projectRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/investor", investorRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

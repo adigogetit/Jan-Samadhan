@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Problem = require("../models/Problems");
+const User = require("../models/User");
 const cloudinary = require("../config/cloudinary");
 const { Readable } = require("stream");
 const { classifyWithAI } = require("../services/aiService");
@@ -73,6 +74,58 @@ const ALLOWED_VALIDATION_STATUSES = [
   "Rejected",
   "Duplicate",
 ];
+
+const assignTopMatchedUniversities = async (problem, performedBy) => {
+  const matches = problem.aiAnalysis?.universityMatches || problem.aiAnalysis?.universityMatching?.topMatches || [];
+  const codes = matches
+    .slice(0, 3)
+    .map((match) => match.id || match.universityId)
+    .filter(Boolean)
+    .map((code) => String(code).toUpperCase());
+  const universities = codes.length
+    ? await User.find({ role: "university", universityId: null, institutionCode: { $in: codes }, isActive: true }).select("_id institutionCode").lean()
+    : [];
+  const byCode = new Map(universities.map((university) => [university.institutionCode, university]));
+  const targets = codes.map((code) => byCode.get(code)?._id).filter(Boolean);
+
+  problem.targetUniversities = targets;
+  problem.acceptedUniversity = null;
+  problem.activity.push({
+    action: "UNIVERSITIES_ASSIGNED",
+    description: targets.length ? `Problem sent to the top ${targets.length} AI-matched universities. The first to accept will own it.` : "No active university accounts were available for the AI matches.",
+    performedBy,
+    metadata: { institutionCodes: codes, universityIds: targets },
+    createdAt: new Date(),
+  });
+};
+
+// Email addresses are looked up from provisioned university accounts rather
+// than stored in the AI dataset, keeping the match result and login identity
+// connected without exposing password or account internals.
+const attachMatchedUniversityEmails = async (problem) => {
+  const responseProblem = problem.toObject ? problem.toObject() : problem;
+  const matches = responseProblem.aiAnalysis?.universityMatches || [];
+
+  if (!matches.length) return responseProblem;
+
+  const codes = matches
+    .map((match) => match.id || match.universityId)
+    .filter(Boolean)
+    .map((code) => String(code).toUpperCase());
+  const universities = await User.find({
+    role: "university",
+    universityId: null,
+    institutionCode: { $in: codes },
+  }).select("institutionCode email").lean();
+  const emailByCode = new Map(universities.map((university) => [university.institutionCode, university.email]));
+
+  responseProblem.aiAnalysis.universityMatches = matches.map((match) => ({
+    ...match,
+    email: emailByCode.get(String(match.id || match.universityId || "").toUpperCase()) || null,
+  }));
+
+  return responseProblem;
+};
 
 // ============================================================
 // HELPER: UPLOAD BUFFER TO CLOUDINARY
@@ -197,7 +250,13 @@ const createProblem = async (req, res) => {
     // ----------------------------------------------------------
 
     const aiText = `${title} ${description}`;
-    const aiResult = await classifyWithAI(aiText);
+    const aiResult = await classifyWithAI(aiText, {
+      title,
+      description,
+      category,
+      district,
+      location: resolvedAddress,
+    });
 
     // ----------------------------------------------------------
     // DETERMINE FINAL CATEGORY, DEPARTMENT, PRIORITY
@@ -231,31 +290,44 @@ const createProblem = async (req, res) => {
       finalCategory = aiMappedCategory;
       finalPriority = aiResult.priority;
 
+      if (aiResult.aiAnalysis?.universityMatches?.length) {
+        const enriched = await attachMatchedUniversityEmails({ aiAnalysis: aiResult.aiAnalysis });
+        aiResult.aiAnalysis = enriched.aiAnalysis;
+      }
+
       aiFields = {
         aiCategory: aiResult.category,
         aiPriority: aiResult.priority,
         aiLanguage: aiResult.language,
         aiUrgency: aiResult.urgency,
         aiMatchedKeywords: aiResult.matchedKeywords,
+        aiAnalysis: aiResult.aiAnalysis,
       };
 
       activityEntries.push({
         action: "AI_CLASSIFIED",
-        description: `AI classified complaint as "${aiResult.category}" (normalised: "${finalCategory}") with ${aiResult.priority} priority in ${aiResult.language}.`,
+        description: `AI analyzed problem: "${aiResult.category}" domain with ${aiResult.priority} priority (${aiResult.aiAnalysis?.routingType || "Innovation"}).`,
         performedBy: req.user._id,
         metadata: {
           aiCategory: aiResult.category,
           normalizedCategory: finalCategory,
           aiPriority: aiResult.priority,
-          aiLanguage: aiResult.language,
-          aiUrgency: aiResult.urgency,
-          matchedKeywords: aiResult.matchedKeywords,
+          routingType: aiResult.aiAnalysis?.routingType,
+          matchedUniversitiesCount:
+            aiResult.aiAnalysis?.universityMatches?.length || 0,
         },
       });
     } else {
       // --------------------------------------------------------
       // AI FALLBACK
       // --------------------------------------------------------
+
+      aiFields = {
+        aiAnalysis: {
+          status: "Pending",
+          error: "AI service was unreachable at submission time.",
+        },
+      };
 
       activityEntries.push({
         action: "AI_CLASSIFICATION_FALLBACK",
@@ -286,9 +358,8 @@ const createProblem = async (req, res) => {
 
     activityEntries.push({
       action: "DEPARTMENT_AUTO_ASSIGNED",
-      description: `Problem automatically routed to ${governmentDepartment} based on ${
-        aiResult ? "AI-classified" : "citizen-selected"
-      } category "${finalCategory}".`,
+      description: `Problem automatically routed to ${governmentDepartment} based on ${aiResult ? "AI-classified" : "citizen-selected"
+        } category "${finalCategory}".`,
       performedBy: req.user._id,
       metadata: {
         category: finalCategory,
@@ -830,11 +901,11 @@ const getPublicProblemOverview = async (req, res) => {
     stats.resolutionRate =
       stats.total > 0
         ? Number(
-            (
-              (stats.resolved / stats.total) *
-              100
-            ).toFixed(1)
-          )
+          (
+            (stats.resolved / stats.total) *
+            100
+          ).toFixed(1)
+        )
         : 0;
 
     // ----------------------------------------------------------
@@ -890,9 +961,10 @@ const getProblemById = async (req, res) => {
 
     // Government can view any complaint.
     if (req.user.role === "government") {
+      const enrichedProblem = await attachMatchedUniversityEmails(problem);
       return res.status(200).json({
         success: true,
-        problem,
+        problem: enrichedProblem,
       });
     }
 
@@ -1101,9 +1173,8 @@ const updateGovernmentProblem = async (
         problem.activity.push({
           action: "DEPARTMENT_CORRECTED",
           description: newDepartment
-            ? `Government corrected the department from ${
-                oldDepartment || "Unassigned"
-              } to ${newDepartment}.`
+            ? `Government corrected the department from ${oldDepartment || "Unassigned"
+            } to ${newDepartment}.`
             : "Government removed the assigned department.",
           performedBy: req.user._id,
           metadata: {
@@ -1154,6 +1225,10 @@ const updateGovernmentProblem = async (
         problem.status;
 
       problem.status = syncedStatus;
+
+      if (validationStatus === "Validated") {
+        await assignTopMatchedUniversities(problem, req.user._id);
+      }
 
       // ONE timeline event for validation + synchronized status.
       problem.activity.push({
@@ -1222,6 +1297,7 @@ const updateGovernmentProblem = async (
           "activity.performedBy",
           "name email role"
         );
+    const enrichedProblem = await attachMatchedUniversityEmails(updatedProblem);
 
     // ----------------------------------------------------------
     // RESPONSE
@@ -1231,7 +1307,7 @@ const updateGovernmentProblem = async (
       success: true,
       message:
         "Problem updated successfully.",
-      problem: updatedProblem,
+      problem: enrichedProblem,
     });
   } catch (error) {
     console.error(
@@ -1249,6 +1325,91 @@ const updateGovernmentProblem = async (
 };
 
 // ============================================================
+// RE-RUN AI ANALYSIS (Authorized: government, admin)
+// ============================================================
+
+const rerunAIAnalysis = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid problem ID.",
+      });
+    }
+
+    const problem = await Problem.findById(id);
+
+    if (!problem) {
+      return res.status(404).json({
+        success: false,
+        message: "Problem not found.",
+      });
+    }
+
+    const aiText = `${problem.title} ${problem.description}`;
+    const aiResult = await classifyWithAI(aiText, {
+      title: problem.title,
+      description: problem.description,
+      category: problem.category,
+      district: problem.district,
+      location: problem.location?.address || "",
+    });
+
+    if (!aiResult) {
+      return res.status(503).json({
+        success: false,
+        message:
+          "AI service is currently unavailable. Please ensure the Python service is running.",
+      });
+    }
+
+    if (aiResult.aiAnalysis?.universityMatches?.length) {
+      const enriched = await attachMatchedUniversityEmails({ aiAnalysis: aiResult.aiAnalysis });
+      aiResult.aiAnalysis = enriched.aiAnalysis;
+    }
+
+    problem.aiCategory = aiResult.category;
+    problem.aiPriority = aiResult.priority;
+    problem.aiLanguage = aiResult.language;
+    problem.aiUrgency = aiResult.urgency;
+    problem.aiMatchedKeywords = aiResult.matchedKeywords;
+    problem.aiAnalysis = aiResult.aiAnalysis;
+
+    problem.activity = problem.activity || [];
+    problem.activity.push({
+      action: "AI_REANALYZED",
+      description: `AI re-analysis completed: "${aiResult.category}" (${aiResult.aiAnalysis?.routingType || "Innovation"}) with ${aiResult.priority} priority and ${aiResult.aiAnalysis?.universityMatches?.length || 0} university matches.`,
+      performedBy: req.user._id,
+      createdAt: new Date(),
+    });
+
+    await problem.save();
+
+    const populatedProblem = await Problem.findById(problem._id)
+      .populate("reportedBy", "name email phone")
+      .populate("activity.performedBy", "name role")
+      .lean();
+    const enrichedProblem = await attachMatchedUniversityEmails(populatedProblem);
+
+    return res.status(200).json({
+      success: true,
+      message: "AI analysis refreshed successfully.",
+      problem: enrichedProblem,
+    });
+  } catch (error) {
+    console.error("Re-run AI analysis error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to re-run AI analysis.",
+      error: error.message,
+    });
+  }
+};
+
+// ============================================================
 // EXPORTS
 // ============================================================
 
@@ -1259,4 +1420,5 @@ module.exports = {
   getPublicProblemOverview,
   getProblemById,
   updateGovernmentProblem,
+  rerunAIAnalysis,
 };

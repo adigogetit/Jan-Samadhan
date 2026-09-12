@@ -1,0 +1,6 @@
+# Societal Innovation Problem Analyzer - Dependencies
+#
+# Core offline engine uses Python standard library (no mandatory external pip packages needed).
+# Optional packages for Cloud LLM integration:
+requests>=2.28.0
+# openai>=1.0.0

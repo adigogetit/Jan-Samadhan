@@ -166,6 +166,22 @@ const problemSchema = new mongoose.Schema(
       default: "Pending",
     },
 
+    // Only these AI-selected university accounts may view and claim the problem.
+    targetUniversities: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    // Atomically set when the first targeted university accepts the problem.
+    acceptedUniversity: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+      index: true,
+    },
+
     // ========================================================
     // AI FIELDS
     // ========================================================
@@ -197,6 +213,37 @@ const problemSchema = new mongoose.Schema(
 
     aiMatchedKeywords: {
       type: mongoose.Schema.Types.Mixed,
+    },
+
+    aiAnalysis: {
+      status: {
+        type: String,
+        enum: ["Pending", "Processing", "Completed", "Failed"],
+        default: "Pending",
+      },
+      analyzedAt: {
+        type: Date,
+      },
+      error: {
+        type: String,
+      },
+      routingType: {
+        type: String,
+      },
+      structuredProblem: {
+        type: mongoose.Schema.Types.Mixed,
+      },
+      deterministicPriority: {
+        type: mongoose.Schema.Types.Mixed,
+      },
+      universityMatching: {
+        type: mongoose.Schema.Types.Mixed,
+      },
+      universityMatches: [
+        {
+          type: mongoose.Schema.Types.Mixed,
+        },
+      ],
     },
 
     // ========================================================

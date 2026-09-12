@@ -268,29 +268,32 @@ function Login() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen bg-[#F7FBF8] flex">
 
       {/* ================= LEFT SIDE ================= */}
 
-      <aside className="hidden lg:flex lg:w-[38%] bg-primary text-white p-10 xl:p-14 flex-col justify-between">
+      <aside className="hidden lg:flex lg:w-[40%] bg-gradient-to-br from-[#18352A] via-[#1F4335] to-[#18352A] text-white p-10 xl:p-14 flex-col justify-between relative overflow-hidden border-r border-[#DDEDE4]">
+        {/* Decorative ambient elements */}
+        <div className="absolute right-[-70px] top-[-90px] h-72 w-72 rounded-full bg-[#2E7D5B]/20 blur-2xl pointer-events-none" />
+        <div className="absolute bottom-[-80px] left-[-60px] h-64 w-64 rounded-full bg-[#2E7D5B]/15 blur-2xl pointer-events-none" />
 
-        <div>
+        <div className="relative z-10">
 
           {/* LOGO */}
 
           <div className="flex items-center gap-3">
 
-            <div className="w-11 h-11 rounded-xl bg-white text-primary flex items-center justify-center font-bold">
-              JS
+            <div className="w-11 h-11 rounded-2xl bg-[#EAF7F0] text-[#2E7D5B] flex items-center justify-center font-black text-xl shadow-sm">
+              J
             </div>
 
             <div>
 
-              <h1 className="font-bold text-xl tracking-tight">
+              <h1 className="font-black text-xl tracking-tight text-white">
                 JAN-SAMADHAN
               </h1>
 
-              <p className="text-xs text-white/75">
+              <p className="text-xs font-semibold text-[#CFE7D8]">
                 Smart Civic Innovation Platform
               </p>
 
@@ -300,50 +303,50 @@ function Login() {
 
           {/* HERO */}
 
-          <div className="mt-24">
+          <div className="mt-20">
 
-            <p className="text-sm font-semibold uppercase tracking-widest text-white/70">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#A0D4B8]">
               Welcome back
             </p>
 
-            <h2 className="mt-4 text-4xl xl:text-5xl font-bold leading-[1.1]">
-              Turn problems into solutions.
+            <h2 className="mt-4 text-4xl xl:text-5xl font-black leading-[1.15] text-white tracking-tight">
+              Turn public problems into civic solutions.
             </h2>
 
-            <p className="mt-6 text-base xl:text-lg leading-7 text-white/85 max-w-md">
-              Continue connecting citizens, government,
-              universities, students and industry to create
-              meaningful solutions for Jharkhand.
+            <p className="mt-6 text-base leading-7 text-[#CFE7D8] max-w-md">
+              Connecting citizens, government authorities,
+              universities, student innovators, and industry partners
+              to create transparent, measurable impact.
             </p>
 
           </div>
 
           {/* BENEFITS */}
 
-          <div className="mt-12 space-y-5">
+          <div className="mt-12 space-y-4">
 
             {[
-              "Track problems and their progress",
-              "Collaborate with the right people",
-              "Discover projects and opportunities",
-              "Create measurable social impact",
+              "AI-driven classification and deterministic priority",
+              "Direct university research and student innovation matching",
+              "End-to-end transparent civic tracking and SLA directives",
+              "Multi-stakeholder collaboration from report to resolution",
             ].map((item) => (
 
               <div
                 key={item}
-                className="flex items-center gap-3"
+                className="flex items-center gap-3 rounded-xl bg-white/5 border border-white/10 p-3"
               >
 
-                <div className="w-6 h-6 rounded-full bg-white text-primary flex items-center justify-center shrink-0">
+                <div className="w-6 h-6 rounded-full bg-[#EAF7F0] text-[#2E7D5B] flex items-center justify-center shrink-0">
 
                   <Check
-                    size={14}
+                    size={13}
                     strokeWidth={3}
                   />
 
                 </div>
 
-                <span className="text-sm text-white/90">
+                <span className="text-xs font-medium text-white/90">
                   {item}
                 </span>
 
@@ -355,9 +358,9 @@ function Login() {
 
         </div>
 
-        <div className="pt-6 border-t border-white/20">
+        <div className="pt-6 border-t border-white/15 relative z-10">
 
-          <p className="text-xs text-white/65">
+          <p className="text-xs text-[#A0D4B8]">
             JAN-SAMADHAN • Smart India Hackathon
           </p>
 
@@ -373,19 +376,19 @@ function Login() {
 
           {/* MOBILE LOGO */}
 
-          <div className="lg:hidden flex items-center gap-3 mb-10">
+          <div className="lg:hidden flex items-center gap-3 mb-8">
 
-            <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center font-bold">
-              JS
+            <div className="w-10 h-10 rounded-xl bg-[#EAF7F0] text-[#2E7D5B] flex items-center justify-center font-black text-lg shadow-sm">
+              J
             </div>
 
             <div>
 
-              <h1 className="font-bold text-lg text-primary">
+              <h1 className="font-extrabold text-lg text-[#18352A]">
                 JAN-SAMADHAN
               </h1>
 
-              <p className="text-xs text-text-secondary">
+              <p className="text-xs text-[#789087]">
                 Smart Civic Innovation Platform
               </p>
 
@@ -399,11 +402,11 @@ function Login() {
 
             <div>
 
-              <h2 className="text-3xl font-bold text-text">
+              <h2 className="text-3xl font-black tracking-tight text-[#18352A]">
                 Welcome back
               </h2>
 
-              <p className="mt-2 text-sm text-text-secondary">
+              <p className="mt-2 text-sm text-[#667A70]">
                 Sign in to continue to JAN-SAMADHAN.
               </p>
 
@@ -411,13 +414,13 @@ function Login() {
 
             <div className="hidden sm:block text-right">
 
-              <p className="text-xs text-text-secondary">
+              <p className="text-xs text-[#789087]">
                 New here?
               </p>
 
               <Link
                 to="/signup"
-                className="text-sm font-semibold text-primary hover:underline"
+                className="text-sm font-bold text-[#2E7D5B] hover:underline"
               >
                 Create account
               </Link>
@@ -430,7 +433,7 @@ function Login() {
 
           {error && (
 
-            <div className="mb-5 rounded-lg border border-red-200 bg-white px-4 py-3 text-sm text-red-600">
+            <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {error}
             </div>
 
@@ -438,7 +441,7 @@ function Login() {
 
           {/* LOGIN CARD */}
 
-          <div className="rounded-2xl border border-border p-5 sm:p-6">
+          <div className="rounded-[26px] border border-[#DDEDE4] bg-white p-6 sm:p-8 shadow-[0_8px_30px_rgba(24,53,42,0.045)]">
 
             <form
               onSubmit={handleSubmit}
@@ -451,7 +454,7 @@ function Login() {
 
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-text mb-2"
+                  className="block text-xs font-bold uppercase tracking-[0.1em] text-[#526A5E] mb-2"
                 >
                   Email address
                 </label>
@@ -465,7 +468,7 @@ function Login() {
                   placeholder="you@example.com"
                   required
                   autoComplete="email"
-                  className="w-full h-11 rounded-lg border border-border bg-white px-3.5 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className="w-full h-12 rounded-xl border border-[#D7E8DE] bg-white px-4 text-sm text-[#18352A] outline-none placeholder:text-[#A0B0A8] focus:border-[#2E7D5B] focus:ring-4 focus:ring-[#EAF7F0] transition"
                 />
 
               </div>
@@ -478,7 +481,7 @@ function Login() {
 
                   <label
                     htmlFor="password"
-                    className="text-sm font-medium text-text"
+                    className="text-xs font-bold uppercase tracking-[0.1em] text-[#526A5E]"
                   >
                     Password
                   </label>
@@ -490,7 +493,7 @@ function Login() {
                         "Password reset flow will be added next."
                       )
                     }
-                    className="text-xs font-medium text-primary hover:underline"
+                    className="text-xs font-bold text-[#2E7D5B] hover:underline"
                   >
                     Forgot password?
                   </button>
@@ -512,7 +515,7 @@ function Login() {
                     placeholder="Enter your password"
                     required
                     autoComplete="current-password"
-                    className="w-full h-11 rounded-lg border border-border bg-white px-3.5 pr-11 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full h-12 rounded-xl border border-[#D7E8DE] bg-white px-4 pr-11 text-sm text-[#18352A] outline-none placeholder:text-[#A0B0A8] focus:border-[#2E7D5B] focus:ring-4 focus:ring-[#EAF7F0] transition"
                   />
 
                   <button
@@ -522,7 +525,7 @@ function Login() {
                         !showPassword
                       )
                     }
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-primary"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#789087] hover:text-[#2E7D5B] transition"
                     aria-label={
                       showPassword
                         ? "Hide password"
@@ -548,10 +551,10 @@ function Login() {
 
                 <input
                   type="checkbox"
-                  className="w-4 h-4 accent-primary"
+                  className="w-4 h-4 accent-[#2E7D5B]"
                 />
 
-                <span className="text-xs text-text-secondary">
+                <span className="text-xs font-medium text-[#667A70]">
                   Remember me
                 </span>
 
@@ -565,7 +568,7 @@ function Login() {
                   loading ||
                   googleLoading
                 }
-                className="w-full h-12 rounded-xl bg-primary text-white font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-60"
+                className="w-full h-12 rounded-xl bg-[#2E7D5B] text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(46,125,91,0.18)] hover:bg-[#246748] transition disabled:cursor-not-allowed disabled:opacity-60"
               >
 
                 {loading
@@ -584,13 +587,13 @@ function Login() {
 
             <div className="flex items-center gap-4 my-6">
 
-              <div className="h-px bg-border flex-1" />
+              <div className="h-px bg-[#DDEDE4] flex-1" />
 
-              <span className="text-xs text-text-secondary">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#A0B0A8]">
                 OR
               </span>
 
-              <div className="h-px bg-border flex-1" />
+              <div className="h-px bg-[#DDEDE4] flex-1" />
 
             </div>
 
@@ -600,7 +603,7 @@ function Login() {
 
               {googleLoading && (
 
-                <div className="mb-3 text-center text-sm text-text-secondary">
+                <div className="mb-3 text-center text-sm text-[#667A70]">
                   Signing in with Google...
                 </div>
 
@@ -613,7 +616,7 @@ function Login() {
 
             </div>
 
-            <p className="mt-3 text-center text-xs text-text-secondary">
+            <p className="mt-3 text-center text-xs text-[#789087]">
               New Google users will complete their
               profile after authentication.
             </p>
@@ -622,13 +625,13 @@ function Login() {
 
           {/* MOBILE SIGNUP */}
 
-          <div className="sm:hidden mt-7 text-center text-sm text-text-secondary">
+          <div className="sm:hidden mt-7 text-center text-sm text-[#667A70]">
 
             Don't have an account?{" "}
 
             <Link
               to="/signup"
-              className="font-semibold text-primary hover:underline"
+              className="font-bold text-[#2E7D5B] hover:underline"
             >
               Create account
             </Link>
@@ -640,7 +643,7 @@ function Login() {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="mt-6 w-full text-center text-sm text-text-secondary hover:text-primary"
+            className="mt-6 w-full text-center text-sm font-bold text-[#5D7469] hover:text-[#2E7D5B] transition"
           >
             ← Back to home
           </button>

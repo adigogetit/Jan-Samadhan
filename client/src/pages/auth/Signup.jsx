@@ -45,33 +45,6 @@ const roles = [
     },
 ];
 
-const districts = [
-    "Bokaro",
-    "Chatra",
-    "Deoghar",
-    "Dhanbad",
-    "Dumka",
-    "East Singhbhum",
-    "Garhwa",
-    "Giridih",
-    "Godda",
-    "Gumla",
-    "Hazaribagh",
-    "Jamtara",
-    "Khunti",
-    "Koderma",
-    "Latehar",
-    "Lohardaga",
-    "Pakur",
-    "Palamu",
-    "Ramgarh",
-    "Ranchi",
-    "Sahebganj",
-    "Seraikela-Kharsawan",
-    "Simdega",
-    "West Singhbhum",
-];
-
 function Signup() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -102,7 +75,6 @@ function Signup() {
         phone: "",
         email: googleProfile?.email || "",
         role: "",
-        district: "",
         department: "",
         organization: "",
         university: "",
@@ -269,7 +241,6 @@ function Signup() {
         }
 
         /*
-         * VERY IMPORTANT:
          * Update AuthContext before navigation.
          */
         setUser(user);
@@ -302,13 +273,6 @@ function Signup() {
             return;
         }
 
-        if (!formData.district) {
-            setError(
-                "Please select your district."
-            );
-            return;
-        }
-
         if (!formData.role) {
             setError(
                 "Please select your role."
@@ -318,7 +282,7 @@ function Signup() {
 
         /*
          * Google users already authenticated
-         * with Google, so they DON'T need a
+         * with Google, so they don't need a
          * JAN-SAMADHAN password here.
          */
         if (!isGoogleSignup) {
@@ -434,9 +398,6 @@ function Signup() {
                                 formData.phone.trim() ||
                                 null,
 
-                            district:
-                                formData.district,
-
                             department:
                                 formData.department.trim() ||
                                 null,
@@ -496,9 +457,6 @@ function Signup() {
                     role:
                         formData.role,
 
-                    district:
-                        formData.district,
-
                     department:
                         formData.department.trim() ||
                         null,
@@ -536,7 +494,9 @@ function Signup() {
 
     const handleGoogleResponse = async (response) => {
         try {
-            console.log("GOOGLE RESPONSE RECEIVED");
+            console.log(
+                "GOOGLE RESPONSE RECEIVED"
+            );
 
             setError("");
             setGoogleLoading(true);
@@ -548,9 +508,14 @@ function Signup() {
             }
 
             try {
-                const apiResponse = await api.post("/auth/google", {
-                    credential: response.credential,
-                });
+                const apiResponse =
+                    await api.post(
+                        "/auth/google",
+                        {
+                            credential:
+                                response.credential,
+                        }
+                    );
 
                 console.log(
                     "GOOGLE BACKEND RESPONSE:",
@@ -564,10 +529,13 @@ function Signup() {
                     );
                 }
 
-                redirectUser(apiResponse.data.user);
+                redirectUser(
+                    apiResponse.data.user
+                );
 
             } catch (apiError) {
-                const data = apiError?.response?.data;
+                const data =
+                    apiError?.response?.data;
 
                 console.log(
                     "GOOGLE AUTH ERROR:",
@@ -584,9 +552,14 @@ function Signup() {
                     navigate("/signup", {
                         replace: true,
                         state: {
-                            googleCredential: response.credential,
+                            googleCredential:
+                                response.credential,
+
                             googleAuth: true,
-                            googleProfile: data.googleProfile || null,
+
+                            googleProfile:
+                                data.googleProfile ||
+                                null,
                         },
                     });
 
@@ -614,33 +587,35 @@ function Signup() {
         }
     };
 
-
     return (
-        <div className="min-h-screen bg-white flex">
+        <div className="min-h-screen bg-[#F7FBF8] flex">
 
             {/* =====================================================
                 LEFT SIDE
             ===================================================== */}
 
-            <aside className="hidden lg:flex lg:w-[38%] bg-primary text-white p-10 xl:p-14 flex-col justify-between">
+            <aside className="hidden lg:flex lg:w-[38%] bg-gradient-to-br from-[#18352A] via-[#1F4335] to-[#18352A] text-white p-10 xl:p-14 flex-col justify-between relative overflow-hidden border-r border-[#DDEDE4]">
+                {/* Decorative ambient elements */}
+                <div className="absolute right-[-70px] top-[-90px] h-72 w-72 rounded-full bg-[#2E7D5B]/20 blur-2xl pointer-events-none" />
+                <div className="absolute bottom-[-80px] left-[-60px] h-64 w-64 rounded-full bg-[#2E7D5B]/15 blur-2xl pointer-events-none" />
 
-                <div>
+                <div className="relative z-10">
 
                     {/* LOGO */}
 
                     <div className="flex items-center gap-3">
 
-                        <div className="w-11 h-11 rounded-xl bg-white text-primary flex items-center justify-center font-bold">
-                            JS
+                        <div className="w-11 h-11 rounded-2xl bg-[#EAF7F0] text-[#2E7D5B] flex items-center justify-center font-black text-xl shadow-sm">
+                            J
                         </div>
 
                         <div>
 
-                            <h1 className="font-bold text-xl tracking-tight">
+                            <h1 className="font-black text-xl tracking-tight text-white">
                                 JAN-SAMADHAN
                             </h1>
 
-                            <p className="text-xs text-white/75">
+                            <p className="text-xs font-semibold text-[#CFE7D8]">
                                 Smart Civic Innovation Platform
                             </p>
 
@@ -652,13 +627,15 @@ function Signup() {
 
                     <div className="mt-20">
 
-                        <p className="text-sm font-semibold uppercase tracking-widest text-white/70">
+                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#A0D4B8]">
+
                             {isGoogleSignup
                                 ? "Complete your profile"
                                 : "Join the ecosystem"}
+
                         </p>
 
-                        <h2 className="mt-4 text-4xl xl:text-5xl font-bold leading-[1.1]">
+                        <h2 className="mt-4 text-4xl xl:text-5xl font-black leading-[1.15] text-white tracking-tight">
 
                             {isGoogleSignup
                                 ? "You're almost ready."
@@ -666,7 +643,7 @@ function Signup() {
 
                         </h2>
 
-                        <p className="mt-6 text-base xl:text-lg leading-7 text-white/85 max-w-md">
+                        <p className="mt-6 text-base leading-7 text-[#CFE7D8] max-w-md">
 
                             {isGoogleSignup
                                 ? "Choose your JAN-SAMADHAN role and complete your profile to continue."
@@ -678,7 +655,7 @@ function Signup() {
 
                     {/* BENEFITS */}
 
-                    <div className="mt-12 space-y-5">
+                    <div className="mt-12 space-y-4">
 
                         {[
                             "Report real problems in your community",
@@ -689,19 +666,19 @@ function Signup() {
 
                             <div
                                 key={item}
-                                className="flex items-center gap-3"
+                                className="flex items-center gap-3 rounded-xl bg-white/5 border border-white/10 p-3"
                             >
 
-                                <div className="w-6 h-6 rounded-full bg-white text-primary flex items-center justify-center shrink-0">
+                                <div className="w-6 h-6 rounded-full bg-[#EAF7F0] text-[#2E7D5B] flex items-center justify-center shrink-0">
 
                                     <Check
-                                        size={14}
+                                        size={13}
                                         strokeWidth={3}
                                     />
 
                                 </div>
 
-                                <span className="text-sm text-white/90">
+                                <span className="text-xs font-medium text-white/90">
                                     {item}
                                 </span>
 
@@ -715,9 +692,9 @@ function Signup() {
 
                 {/* FOOTER */}
 
-                <div className="pt-6 border-t border-white/20">
+                <div className="pt-6 border-t border-white/15 relative z-10">
 
-                    <p className="text-xs text-white/65">
+                    <p className="text-xs text-[#A0D4B8]">
                         JAN-SAMADHAN • Smart India Hackathon
                     </p>
 
@@ -729,25 +706,25 @@ function Signup() {
                 RIGHT SIDE
             ===================================================== */}
 
-            <main className="flex-1 flex justify-center px-5 sm:px-8 py-8 lg:py-10 overflow-y-auto">
+            <main className="flex-1 flex justify-center px-4 sm:px-6 py-6 lg:py-8 overflow-y-auto">
 
-                <div className="w-full max-w-3xl">
+                <div className="w-full max-w-2xl">
 
                     {/* MOBILE LOGO */}
 
-                    <div className="lg:hidden flex items-center gap-3 mb-8">
+                    <div className="lg:hidden flex items-center gap-3 mb-6">
 
-                        <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center font-bold">
-                            JS
+                        <div className="w-10 h-10 rounded-xl bg-[#EAF7F0] text-[#2E7D5B] flex items-center justify-center font-black text-lg shadow-sm">
+                            J
                         </div>
 
                         <div>
 
-                            <h1 className="font-bold text-lg text-primary">
+                            <h1 className="font-extrabold text-lg text-[#18352A]">
                                 JAN-SAMADHAN
                             </h1>
 
-                            <p className="text-xs text-text-secondary">
+                            <p className="text-xs text-[#789087]">
                                 Smart Civic Innovation Platform
                             </p>
 
@@ -757,13 +734,13 @@ function Signup() {
 
                     {/* HEADER */}
 
-                    <div className="mb-7">
+                    <div className="mb-5">
 
                         <div className="flex items-end justify-between gap-4">
 
                             <div>
 
-                                <h2 className="text-3xl font-bold text-text">
+                                <h2 className="text-3xl font-black tracking-tight text-[#18352A]">
 
                                     {isGoogleSignup
                                         ? "Complete your account"
@@ -771,7 +748,7 @@ function Signup() {
 
                                 </h2>
 
-                                <p className="mt-2 text-sm text-text-secondary">
+                                <p className="mt-2 text-sm text-[#667A70]">
 
                                     {isGoogleSignup
                                         ? "Your Google details are already verified. Complete the remaining information."
@@ -783,13 +760,13 @@ function Signup() {
 
                             <div className="hidden sm:block text-right">
 
-                                <p className="text-xs text-text-secondary">
+                                <p className="text-xs text-[#789087]">
                                     Already registered?
                                 </p>
 
                                 <Link
                                     to="/login"
-                                    className="text-sm font-semibold text-primary hover:underline"
+                                    className="text-sm font-bold text-[#2E7D5B] hover:underline"
                                 >
                                     Sign in
                                 </Link>
@@ -804,7 +781,7 @@ function Signup() {
 
                     {isGoogleSignup && (
 
-                        <div className="mb-5 rounded-xl border border-primary/20 bg-white p-4">
+                        <div className="mb-4 rounded-xl border border-primary/20 bg-white p-3">
 
                             <div className="flex items-center gap-3">
 
@@ -815,12 +792,12 @@ function Signup() {
                                             googleProfile.picture
                                         }
                                         alt=""
-                                        className="w-10 h-10 rounded-full"
+                                        className="w-9 h-9 rounded-full"
                                     />
 
                                 ) : (
 
-                                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+                                    <div className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
 
                                         {formData.name
                                             ?.charAt(0)
@@ -859,7 +836,7 @@ function Signup() {
 
                     {error && (
 
-                        <div className="mb-5 rounded-lg border border-red-200 bg-white px-4 py-3 text-sm text-red-600">
+                        <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
 
                             {error}
 
@@ -873,14 +850,14 @@ function Signup() {
 
                     <form
                         onSubmit={handleSubmit}
-                        className="space-y-6"
+                        className="space-y-4"
                     >
 
                         {/* BASIC INFORMATION */}
 
-                        <section className="rounded-2xl border border-border p-5 sm:p-6">
+                        <section className="rounded-2xl border border-border p-4 sm:p-5">
 
-                            <div className="mb-5">
+                            <div className="mb-4">
 
                                 <h3 className="text-base font-semibold text-text">
                                     Basic information
@@ -896,13 +873,13 @@ function Signup() {
 
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                                 {/* NAME */}
 
                                 <div>
 
-                                    <label className="block text-sm font-medium text-text mb-2">
+                                    <label className="block text-sm font-medium text-text mb-1.5">
                                         Full name
                                     </label>
 
@@ -921,15 +898,15 @@ function Signup() {
                                             isGoogleSignup
                                         }
                                         autoComplete="name"
-                                        className={`w-full h-11 rounded-lg border border-border px-3.5 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${isGoogleSignup
-                                            ? "bg-slate-50 cursor-not-allowed"
-                                            : "bg-white"
+                                        className={`w-full h-10 rounded-lg border border-border px-3 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${isGoogleSignup
+                                                ? "bg-slate-50 cursor-not-allowed"
+                                                : "bg-white"
                                             }`}
                                     />
 
                                     {isGoogleSignup && (
 
-                                        <p className="mt-1.5 text-[11px] text-text-secondary">
+                                        <p className="mt-1 text-[11px] text-text-secondary">
                                             Verified through Google
                                         </p>
 
@@ -941,7 +918,7 @@ function Signup() {
 
                                 <div>
 
-                                    <label className="block text-sm font-medium text-text mb-2">
+                                    <label className="block text-sm font-medium text-text mb-1.5">
                                         Phone number
                                     </label>
 
@@ -956,16 +933,16 @@ function Signup() {
                                         }
                                         placeholder="Your phone number"
                                         autoComplete="tel"
-                                        className="w-full h-11 rounded-lg border border-border bg-white px-3.5 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                        className="w-full h-10 rounded-lg border border-border bg-white px-3 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                     />
 
                                 </div>
 
                                 {/* EMAIL */}
 
-                                <div>
+                                <div className="md:col-span-2">
 
-                                    <label className="block text-sm font-medium text-text mb-2">
+                                    <label className="block text-sm font-medium text-text mb-1.5">
                                         Email address
                                     </label>
 
@@ -984,15 +961,15 @@ function Signup() {
                                             isGoogleSignup
                                         }
                                         autoComplete="email"
-                                        className={`w-full h-11 rounded-lg border border-border px-3.5 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${isGoogleSignup
-                                            ? "bg-slate-50 cursor-not-allowed"
-                                            : "bg-white"
+                                        className={`w-full h-10 rounded-lg border border-border px-3 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${isGoogleSignup
+                                                ? "bg-slate-50 cursor-not-allowed"
+                                                : "bg-white"
                                             }`}
                                     />
 
                                     {isGoogleSignup && (
 
-                                        <p className="mt-1.5 text-[11px] text-text-secondary">
+                                        <p className="mt-1 text-[11px] text-text-secondary">
                                             Verified through Google
                                         </p>
 
@@ -1000,60 +977,17 @@ function Signup() {
 
                                 </div>
 
-                                {/* DISTRICT */}
-
-                                <div>
-
-                                    <label className="block text-sm font-medium text-text mb-2">
-                                        District
-                                    </label>
-
-                                    <select
-                                        name="district"
-                                        value={
-                                            formData.district
-                                        }
-                                        onChange={
-                                            handleChange
-                                        }
-                                        required
-                                        className="w-full h-11 rounded-lg border border-border bg-white px-3.5 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                                    >
-
-                                        <option value="">
-                                            Select district
-                                        </option>
-
-                                        {districts.map(
-                                            (district) => (
-
-                                                <option
-                                                    key={
-                                                        district
-                                                    }
-                                                    value={
-                                                        district
-                                                    }
-                                                >
-                                                    {district}
-                                                </option>
-
-                                            )
-                                        )}
-
-                                    </select>
-
-                                </div>
-
                             </div>
 
                         </section>
 
-                        {/* ROLE */}
+                        {/* =================================================
+                            ROLE
+                        ================================================= */}
 
-                        <section className="rounded-2xl border border-border p-5 sm:p-6">
+                        <section className="rounded-2xl border border-border p-4 sm:p-5">
 
-                            <div className="mb-5">
+                            <div className="mb-3">
 
                                 <h3 className="text-base font-semibold text-text">
                                     Choose your role
@@ -1065,7 +999,7 @@ function Signup() {
 
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
 
                                 {roles.map((role) => {
 
@@ -1085,15 +1019,15 @@ function Signup() {
                                                     role.value
                                                 )
                                             }
-                                            className={`relative text-left rounded-xl border p-4 transition ${selected
-                                                ? "border-primary"
-                                                : "border-border hover:border-primary"
+                                            className={`relative text-left rounded-xl border p-3 transition ${selected
+                                                    ? "border-primary"
+                                                    : "border-border hover:border-primary"
                                                 }`}
                                         >
 
                                             {selected && (
 
-                                                <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center">
+                                                <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center">
 
                                                     <Check
                                                         size={12}
@@ -1107,16 +1041,18 @@ function Signup() {
                                             )}
 
                                             <div
-                                                className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 font-semibold ${selected
-                                                    ? "bg-primary text-white"
-                                                    : "border border-border text-text-secondary"
+                                                className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 font-semibold text-sm ${selected
+                                                        ? "bg-primary text-white"
+                                                        : "border border-border text-text-secondary"
                                                     }`}
                                             >
+
                                                 {
                                                     role.label.charAt(
                                                         0
                                                     )
                                                 }
+
                                             </div>
 
                                             <p className="text-sm font-semibold text-text pr-5">
@@ -1125,7 +1061,7 @@ function Signup() {
                                                 }
                                             </p>
 
-                                            <p className="mt-1 text-xs leading-5 text-text-secondary">
+                                            <p className="mt-1 text-xs leading-4 text-text-secondary">
                                                 {
                                                     role.description
                                                 }
@@ -1140,13 +1076,15 @@ function Signup() {
 
                         </section>
 
-                        {/* PROFESSIONAL INFORMATION */}
+                        {/* =================================================
+                            PROFESSIONAL INFORMATION
+                        ================================================= */}
 
                         {formData.role && (
 
-                            <section className="rounded-2xl border border-border p-5 sm:p-6">
+                            <section className="rounded-2xl border border-border p-4 sm:p-5">
 
-                                <div className="mb-5">
+                                <div className="mb-4">
 
                                     <h3 className="text-base font-semibold text-text">
 
@@ -1168,7 +1106,7 @@ function Signup() {
 
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                                     {/* GOVERNMENT */}
 
@@ -1178,7 +1116,7 @@ function Signup() {
 
                                                 <div>
 
-                                                    <label className="block text-sm font-medium text-text mb-2">
+                                                    <label className="block text-sm font-medium text-text mb-1.5">
                                                         Organization
                                                     </label>
 
@@ -1191,14 +1129,14 @@ function Signup() {
                                                             handleChange
                                                         }
                                                         placeholder="Government organization"
-                                                        className="w-full h-11 rounded-lg border border-border bg-white px-3.5 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                        className="w-full h-10 rounded-lg border border-border bg-white px-3 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                                     />
 
                                                 </div>
 
                                                 <div>
 
-                                                    <label className="block text-sm font-medium text-text mb-2">
+                                                    <label className="block text-sm font-medium text-text mb-1.5">
                                                         Department
                                                     </label>
 
@@ -1211,7 +1149,7 @@ function Signup() {
                                                             handleChange
                                                         }
                                                         placeholder="Your department"
-                                                        className="w-full h-11 rounded-lg border border-border bg-white px-3.5 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                        className="w-full h-10 rounded-lg border border-border bg-white px-3 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                                     />
 
                                                 </div>
@@ -1227,7 +1165,7 @@ function Signup() {
 
                                                 <div>
 
-                                                    <label className="block text-sm font-medium text-text mb-2">
+                                                    <label className="block text-sm font-medium text-text mb-1.5">
                                                         University / Institution
                                                     </label>
 
@@ -1240,14 +1178,14 @@ function Signup() {
                                                             handleChange
                                                         }
                                                         placeholder="University name"
-                                                        className="w-full h-11 rounded-lg border border-border bg-white px-3.5 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                        className="w-full h-10 rounded-lg border border-border bg-white px-3 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                                     />
 
                                                 </div>
 
                                                 <div>
 
-                                                    <label className="block text-sm font-medium text-text mb-2">
+                                                    <label className="block text-sm font-medium text-text mb-1.5">
                                                         Department
                                                     </label>
 
@@ -1260,7 +1198,7 @@ function Signup() {
                                                             handleChange
                                                         }
                                                         placeholder="Department"
-                                                        className="w-full h-11 rounded-lg border border-border bg-white px-3.5 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                        className="w-full h-10 rounded-lg border border-border bg-white px-3 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                                     />
 
                                                 </div>
@@ -1276,7 +1214,7 @@ function Signup() {
 
                                                 <div>
 
-                                                    <label className="block text-sm font-medium text-text mb-2">
+                                                    <label className="block text-sm font-medium text-text mb-1.5">
                                                         University / Institution
                                                     </label>
 
@@ -1289,14 +1227,14 @@ function Signup() {
                                                             handleChange
                                                         }
                                                         placeholder="University name"
-                                                        className="w-full h-11 rounded-lg border border-border bg-white px-3.5 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                        className="w-full h-10 rounded-lg border border-border bg-white px-3 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                                     />
 
                                                 </div>
 
                                                 <div>
 
-                                                    <label className="block text-sm font-medium text-text mb-2">
+                                                    <label className="block text-sm font-medium text-text mb-1.5">
                                                         Department
                                                     </label>
 
@@ -1309,7 +1247,7 @@ function Signup() {
                                                             handleChange
                                                         }
                                                         placeholder="Department"
-                                                        className="w-full h-11 rounded-lg border border-border bg-white px-3.5 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                        className="w-full h-10 rounded-lg border border-border bg-white px-3 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                                     />
 
                                                 </div>
@@ -1324,7 +1262,7 @@ function Signup() {
 
                                             <div className="md:col-span-2">
 
-                                                <label className="block text-sm font-medium text-text mb-2">
+                                                <label className="block text-sm font-medium text-text mb-1.5">
                                                     Organization / Company
                                                 </label>
 
@@ -1337,7 +1275,7 @@ function Signup() {
                                                         handleChange
                                                     }
                                                     placeholder="Company or organization name"
-                                                    className="w-full h-11 rounded-lg border border-border bg-white px-3.5 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                    className="w-full h-10 rounded-lg border border-border bg-white px-3 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                                 />
 
                                             </div>
@@ -1353,15 +1291,15 @@ function Signup() {
 
                                                 <div className="flex items-center gap-3">
 
-                                                    <div className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center">
+                                                    <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
 
-                                                        <Check size={17} />
+                                                        <Check size={16} />
 
                                                     </div>
 
                                                     <p className="text-sm text-text-secondary">
 
-                                                        You're ready to report and track problems in your selected district.
+                                                        You're ready to report and track community problems.
 
                                                     </p>
 
@@ -1377,13 +1315,15 @@ function Signup() {
 
                         )}
 
-                        {/* PASSWORD */}
+                        {/* =================================================
+                            PASSWORD
+                        ================================================= */}
 
                         {!isGoogleSignup && (
 
-                            <section className="rounded-2xl border border-border p-5 sm:p-6">
+                            <section className="rounded-2xl border border-border p-4 sm:p-5">
 
-                                <div className="mb-5">
+                                <div className="mb-4">
 
                                     <h3 className="text-base font-semibold text-text">
                                         Secure your account
@@ -1395,13 +1335,13 @@ function Signup() {
 
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                                     {/* PASSWORD */}
 
                                     <div>
 
-                                        <label className="block text-sm font-medium text-text mb-2">
+                                        <label className="block text-sm font-medium text-text mb-1.5">
                                             Password
                                         </label>
 
@@ -1423,7 +1363,7 @@ function Signup() {
                                                 placeholder="Create password"
                                                 required
                                                 autoComplete="new-password"
-                                                className="w-full h-11 rounded-lg border border-border bg-white px-3.5 pr-11 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                className="w-full h-10 rounded-lg border border-border bg-white px-3 pr-10 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                             />
 
                                             <button
@@ -1437,9 +1377,9 @@ function Signup() {
                                             >
 
                                                 {showPassword ? (
-                                                    <EyeOff size={18} />
+                                                    <EyeOff size={17} />
                                                 ) : (
-                                                    <Eye size={18} />
+                                                    <Eye size={17} />
                                                 )}
 
                                             </button>
@@ -1452,7 +1392,7 @@ function Signup() {
 
                                     <div>
 
-                                        <label className="block text-sm font-medium text-text mb-2">
+                                        <label className="block text-sm font-medium text-text mb-1.5">
                                             Confirm password
                                         </label>
 
@@ -1474,7 +1414,7 @@ function Signup() {
                                                 placeholder="Confirm password"
                                                 required
                                                 autoComplete="new-password"
-                                                className="w-full h-11 rounded-lg border border-border bg-white px-3.5 pr-11 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                className="w-full h-10 rounded-lg border border-border bg-white px-3 pr-10 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                             />
 
                                             <button
@@ -1488,9 +1428,9 @@ function Signup() {
                                             >
 
                                                 {showConfirmPassword ? (
-                                                    <EyeOff size={18} />
+                                                    <EyeOff size={17} />
                                                 ) : (
-                                                    <Eye size={18} />
+                                                    <Eye size={17} />
                                                 )}
 
                                             </button>
@@ -1528,7 +1468,7 @@ function Signup() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-12 rounded-xl bg-primary text-white font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-60"
+                                className="w-full h-11 rounded-xl bg-primary text-white font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-60"
                             >
 
                                 {loading
@@ -1549,12 +1489,16 @@ function Signup() {
 
                     </form>
 
-                    {/* GOOGLE SIGNUP */}
+                    {/* =================================================
+                        GOOGLE SIGNUP
+                    ================================================= */}
 
                     {!isGoogleSignup && (
-                        <div className="mt-5">
 
-                            <div className="flex items-center gap-4 mb-5">
+                        <div className="mt-4">
+
+                            <div className="flex items-center gap-4 mb-4">
+
                                 <div className="h-px bg-border flex-1" />
 
                                 <span className="text-xs text-text-secondary">
@@ -1562,12 +1506,15 @@ function Signup() {
                                 </span>
 
                                 <div className="h-px bg-border flex-1" />
+
                             </div>
 
                             {googleLoading && (
+
                                 <p className="mb-3 text-center text-sm text-text-secondary">
                                     Connecting to Google...
                                 </p>
+
                             )}
 
                             <div
@@ -1575,16 +1522,17 @@ function Signup() {
                                 className="w-full flex justify-center overflow-hidden"
                             />
 
-                            <p className="mt-3 text-center text-xs text-text-secondary">
+                            <p className="mt-2 text-center text-xs text-text-secondary">
                                 Continue securely with your Google account.
                             </p>
 
                         </div>
+
                     )}
 
                     {/* MOBILE LOGIN */}
 
-                    <div className="sm:hidden mt-7 text-center text-sm text-text-secondary">
+                    <div className="sm:hidden mt-6 text-center text-sm text-text-secondary">
 
                         Already have an account?{" "}
 
@@ -1602,7 +1550,7 @@ function Signup() {
                     <button
                         type="button"
                         onClick={() => navigate("/")}
-                        className="mt-6 w-full text-center text-sm text-text-secondary hover:text-primary"
+                        className="mt-5 w-full text-center text-sm text-text-secondary hover:text-primary"
                     >
                         ← Back to home
                     </button>

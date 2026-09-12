@@ -7,6 +7,7 @@ const {
   getGovernmentProblems,
   updateGovernmentProblem,
   getPublicProblemOverview,
+  rerunAIAnalysis,
 } = require("../controllers/problemController");
 
 const {
@@ -68,6 +69,17 @@ router.patch(
   protect,
   authorize("government"),
   updateGovernmentProblem
+);
+
+// ============================================================
+// RE-RUN AI ANALYSIS
+// ============================================================
+
+router.post(
+  "/:id/analyze",
+  protect,
+  authorize("government", "admin"),
+  rerunAIAnalysis
 );
 
 // ============================================================

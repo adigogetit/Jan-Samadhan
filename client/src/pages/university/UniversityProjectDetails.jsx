@@ -22,13 +22,13 @@ const PROGRESS_STATUSES = [
 ];
 
 const statusStyles = {
-  Planning: "bg-slate-100 text-slate-700",
-  Development: "bg-blue-100 text-blue-700",
-  Testing: "bg-amber-100 text-amber-700",
-  Pilot: "bg-purple-100 text-purple-700",
-  Deployment: "bg-cyan-100 text-cyan-700",
-  Completed: "bg-emerald-100 text-emerald-700",
-  Cancelled: "bg-red-100 text-red-700",
+  Planning: "bg-[#F3F7F5] text-[#5C7067] border border-[#DDE8E2]",
+  Development: "bg-[#EAF7F0] text-[#246748] border border-[#CBE8D7]",
+  Testing: "bg-[#FFF6E5] text-[#A46308] border border-[#F6D99D]",
+  Pilot: "bg-[#EAF7F0] text-[#246748] border border-[#CBE8D7]",
+  Deployment: "bg-[#EAF7F0] text-[#246748] border border-[#CBE8D7]",
+  Completed: "bg-[#EAF7F0] text-[#246748] border border-[#CBE8D7]",
+  Cancelled: "bg-[#FFF0F0] text-[#B42318] border border-[#F3C5C5]",
 };
 
 const formatDate = (date) => {
@@ -336,9 +336,9 @@ export default function UniversityProjectDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#F7FBF8] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-slate-200 border-t-[#1F6F8B] rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-10 h-10 border-4 border-slate-200 border-t-[#2E7D5B] rounded-full animate-spin mx-auto mb-4" />
 
           <p className="text-slate-600">
             Loading project...
@@ -354,13 +354,13 @@ export default function UniversityProjectDetails() {
 
   if (error || !project) {
     return (
-      <div className="min-h-screen bg-slate-50 p-6">
+      <div className="min-h-screen bg-[#F7FBF8] p-6">
         <div className="max-w-4xl mx-auto">
           <button
             onClick={() =>
               navigate("/university/projects")
             }
-            className="mb-6 text-[#1F6F8B] hover:underline"
+            className="mb-6 text-[#2E7D5B] hover:underline"
           >
             ← Back to Projects
           </button>
@@ -396,12 +396,12 @@ export default function UniversityProjectDetails() {
     );
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#F7FBF8]">
       {/* ========================================================
           HEADER
       ======================================================== */}
 
-      <div className="bg-[#172B3A] text-white">
+      <div className="bg-[#18352A] text-white">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <button
             onClick={() =>
@@ -502,7 +502,7 @@ export default function UniversityProjectDetails() {
                     setStatusError("");
                   }}
                   disabled={updatingStatus}
-                  className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-[#1F6F8B]/20 focus:border-[#1F6F8B] disabled:bg-slate-100"
+                  className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-[#2E7D5B]/20 focus:border-[#2E7D5B] disabled:bg-slate-100"
                 >
                   {PROJECT_STATUSES.map(
                     (status) => (
@@ -524,7 +524,7 @@ export default function UniversityProjectDetails() {
                     selectedStatus ===
                     project.status
                   }
-                  className="md:w-48 px-5 py-3 rounded-xl bg-[#1F6F8B] text-white font-semibold text-sm hover:bg-[#185d76] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="md:w-48 px-5 py-3 rounded-xl bg-[#2E7D5B] text-white font-semibold text-sm hover:bg-[#185d76] transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {updatingStatus
                     ? "Updating..."
@@ -574,7 +574,7 @@ export default function UniversityProjectDetails() {
                         >
                           <div
                             className={`px-3 py-2 rounded-lg text-xs font-semibold ${isCurrent
-                              ? "bg-[#1F6F8B] text-white"
+                              ? "bg-[#2E7D5B] text-white"
                               : isCompleted
                                 ? "bg-emerald-50 text-emerald-700"
                                 : "bg-slate-100 text-slate-400"
@@ -618,7 +618,7 @@ export default function UniversityProjectDetails() {
                     {faculty.map((member) => <option key={member._id} value={member._id}>{member.name} — {member.email}{member.department ? ` (${member.department})` : ""}</option>)}
                   </select>
                   {!faculty.length && <p className="mt-3 text-sm text-slate-500">No eligible faculty members are available.</p>}
-                  <div className="flex justify-end gap-3 mt-6"><button type="button" onClick={() => setShowFacultyPicker(false)} className="px-4 py-2 text-sm font-semibold text-slate-600">Cancel</button><button type="button" onClick={saveFaculty} disabled={teamLoading || !selectedFacultyId} className="px-4 py-2 rounded-xl bg-[#1F6F8B] text-sm font-semibold text-white disabled:opacity-50">{teamLoading ? "Saving..." : "Save"}</button></div>
+                  <div className="flex justify-end gap-3 mt-6"><button type="button" onClick={() => setShowFacultyPicker(false)} className="px-4 py-2 text-sm font-semibold text-slate-600">Cancel</button><button type="button" onClick={saveFaculty} disabled={teamLoading || !selectedFacultyId} className="px-4 py-2 rounded-xl bg-[#2E7D5B] text-sm font-semibold text-white disabled:opacity-50">{teamLoading ? "Saving..." : "Save"}</button></div>
                 </div>
               </div>}
 
@@ -627,7 +627,7 @@ export default function UniversityProjectDetails() {
                   <h3 className="text-lg font-bold text-slate-800">Add Students</h3><p className="text-sm text-slate-500 mt-1">Choose one or more students to add to this project.</p>
                   <div className="mt-4 max-h-72 overflow-y-auto space-y-2">{students.map((student) => <label key={student._id} className="flex gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer"><input type="checkbox" checked={selectedStudentIds.includes(student._id)} onChange={() => setSelectedStudentIds((selected) => selected.includes(student._id) ? selected.filter((studentId) => studentId !== student._id) : [...selected, student._id])} /><span><span className="block font-medium text-slate-800">{student.name}</span><span className="block text-sm text-slate-500">{student.email}{student.department ? ` · ${student.department}` : ""}</span></span></label>)}</div>
                   {!students.length && <p className="mt-3 text-sm text-slate-500">All eligible students are already assigned, or none are available.</p>}
-                  <div className="flex justify-end gap-3 mt-6"><button type="button" onClick={() => setShowStudentPicker(false)} className="px-4 py-2 text-sm font-semibold text-slate-600">Cancel</button><button type="button" onClick={saveStudents} disabled={teamLoading || !selectedStudentIds.length} className="px-4 py-2 rounded-xl bg-[#1F6F8B] text-sm font-semibold text-white disabled:opacity-50">{teamLoading ? "Saving..." : "Add Selected"}</button></div>
+                  <div className="flex justify-end gap-3 mt-6"><button type="button" onClick={() => setShowStudentPicker(false)} className="px-4 py-2 text-sm font-semibold text-slate-600">Cancel</button><button type="button" onClick={saveStudents} disabled={teamLoading || !selectedStudentIds.length} className="px-4 py-2 rounded-xl bg-[#2E7D5B] text-sm font-semibold text-white disabled:opacity-50">{teamLoading ? "Saving..." : "Add Selected"}</button></div>
                 </div>
               </div>}
             </section>
@@ -680,14 +680,14 @@ export default function UniversityProjectDetails() {
                   {problem._id && (
                     <Link
                       to={`/university/problems/${problem._id}`}
-                      className="text-sm font-semibold text-[#1F6F8B] hover:underline"
+                      className="text-sm font-semibold text-[#2E7D5B] hover:underline"
                     >
                       View Problem →
                     </Link>
                   )}
                 </div>
 
-                <div className="bg-slate-50 rounded-xl p-5">
+                <div className="bg-[#F7FBF8] rounded-xl p-5">
                   <h3 className="font-semibold text-slate-800 text-lg">
                     {problem.title}
                   </h3>
@@ -754,7 +754,7 @@ export default function UniversityProjectDetails() {
 
                 <div className="border border-slate-200 rounded-xl p-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-full bg-[#1F6F8B]/10 flex items-center justify-center text-[#1F6F8B]">
+                    <div className="w-11 h-11 rounded-full bg-[#2E7D5B]/10 flex items-center justify-center text-[#2E7D5B]">
                       🎓
                     </div>
 
@@ -775,7 +775,7 @@ export default function UniversityProjectDetails() {
                       </>}
 
                       <div className="flex gap-3 mt-3">
-                        <button type="button" onClick={openFacultyPicker} disabled={teamLoading} className="text-sm font-semibold text-[#1F6F8B] hover:underline disabled:opacity-50">{project.facultyLead ? "Change Faculty" : "Assign Faculty"}</button>
+                        <button type="button" onClick={openFacultyPicker} disabled={teamLoading} className="text-sm font-semibold text-[#2E7D5B] hover:underline disabled:opacity-50">{project.facultyLead ? "Change Faculty" : "Assign Faculty"}</button>
                         {project.facultyLead && <button type="button" onClick={removeFaculty} disabled={teamLoading} className="text-sm font-semibold text-red-600 hover:underline disabled:opacity-50">Remove</button>}
                       </div>
                     </div>
@@ -801,7 +801,7 @@ export default function UniversityProjectDetails() {
                         students
                       </p>
 
-                      <button type="button" onClick={openStudentPicker} disabled={teamLoading} className="text-sm font-semibold text-[#1F6F8B] hover:underline mt-3 disabled:opacity-50">Add Students</button>
+                      <button type="button" onClick={openStudentPicker} disabled={teamLoading} className="text-sm font-semibold text-[#2E7D5B] hover:underline mt-3 disabled:opacity-50">Add Students</button>
                     </div>
                   </div>
 
@@ -887,7 +887,7 @@ export default function UniversityProjectDetails() {
                   )}
                 </div>
               ) : (
-                <div className="mb-6 rounded-xl bg-slate-50 border border-slate-100 p-4 text-xs text-slate-500">
+                <div className="mb-6 rounded-xl bg-[#F7FBF8] border border-slate-100 p-4 text-xs text-slate-500">
                   No official industry partner has been assigned yet. Review incoming proposals below to collaborate.
                 </div>
               )}
@@ -922,12 +922,12 @@ export default function UniversityProjectDetails() {
                               </span>
                               <span
                                 className={`rounded-full px-2 py-0.5 text-[10px] font-semibold border ${item.status === "Accepted"
-                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                    : item.status === "Pending"
-                                      ? "bg-amber-50 text-amber-700 border-amber-200"
-                                      : item.status === "Rejected"
-                                        ? "bg-red-50 text-red-700 border-red-200"
-                                        : "bg-slate-100 text-slate-600 border-slate-200"
+                                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                  : item.status === "Pending"
+                                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                                    : item.status === "Rejected"
+                                      ? "bg-red-50 text-red-700 border-red-200"
+                                      : "bg-slate-100 text-slate-600 border-slate-200"
                                   }`}
                               >
                                 {item.status}
@@ -986,7 +986,7 @@ export default function UniversityProjectDetails() {
                         </div>
 
                         {item.message && (
-                          <div className="mt-3 rounded-lg bg-slate-50 p-3 text-slate-700 border border-slate-100">
+                          <div className="mt-3 rounded-lg bg-[#F7FBF8] p-3 text-slate-700 border border-slate-100">
                             <p className="text-[10px] font-semibold uppercase text-slate-400 mb-0.5">
                               Message:
                             </p>
@@ -1032,7 +1032,7 @@ export default function UniversityProjectDetails() {
                           className="flex gap-4"
                         >
                           <div className="flex flex-col items-center">
-                            <div className="w-3 h-3 rounded-full bg-[#1F6F8B] mt-1.5" />
+                            <div className="w-3 h-3 rounded-full bg-[#2E7D5B] mt-1.5" />
 
                             {index !==
                               activities.length -
@@ -1188,7 +1188,7 @@ export default function UniversityProjectDetails() {
                       >
                         <div
                           className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${current
-                            ? "bg-[#1F6F8B] text-white"
+                            ? "bg-[#2E7D5B] text-white"
                             : completed
                               ? "bg-emerald-100 text-emerald-700"
                               : "bg-slate-100 text-slate-400"
@@ -1201,7 +1201,7 @@ export default function UniversityProjectDetails() {
 
                         <span
                           className={`text-sm ${current
-                            ? "font-bold text-[#1F6F8B]"
+                            ? "font-bold text-[#2E7D5B]"
                             : completed
                               ? "font-semibold text-slate-800"
                               : "text-slate-400"
@@ -1233,7 +1233,7 @@ export default function UniversityProjectDetails() {
                 QUICK ACTIONS
             -------------------------------------------------- */}
 
-            <section className="bg-[#172B3A] rounded-2xl p-6 text-white">
+            <section className="bg-[#18352A] rounded-2xl p-6 text-white">
               <h2 className="text-lg font-bold">
                 University Actions
               </h2>
@@ -1244,7 +1244,7 @@ export default function UniversityProjectDetails() {
 
               <Link
                 to="/university/projects"
-                className="block text-center mt-5 bg-white text-[#172B3A] font-semibold rounded-xl px-4 py-3 hover:bg-slate-100 transition"
+                className="block text-center mt-5 bg-white text-[#18352A] font-semibold rounded-xl px-4 py-3 hover:bg-slate-100 transition"
               >
                 View All Projects
               </Link>

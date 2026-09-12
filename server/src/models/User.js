@@ -61,6 +61,14 @@ const userSchema = new mongoose.Schema(
       default: null,
     },
 
+    institutionCode: {
+      type: String,
+      trim: true,
+      uppercase: true,
+      default: null,
+      index: true,
+    },
+
     department: {
       type: String,
       trim: true,

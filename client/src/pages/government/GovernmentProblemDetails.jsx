@@ -170,13 +170,13 @@ const getMediaType = (item) => {
 
   const rawType = String(
     item.type ||
-      item.mimeType ||
-      item.mime_type ||
-      item.contentType ||
-      item.content_type ||
-      item.mediaType ||
-      item.media_type ||
-      ""
+    item.mimeType ||
+    item.mime_type ||
+    item.contentType ||
+    item.content_type ||
+    item.mediaType ||
+    item.media_type ||
+    ""
   ).toLowerCase();
 
   /*
@@ -354,38 +354,32 @@ const normalizeMedia = (problem) => {
 
 const getStatusClass = (status) => {
   const styles = {
-    Pending: "bg-slate-100 text-slate-700",
-    "Under Review":
-      "bg-amber-50 text-amber-700",
-    Validated:
-      "bg-blue-50 text-blue-700",
-    "In Progress":
-      "bg-indigo-50 text-indigo-700",
-    Resolved:
-      "bg-emerald-50 text-emerald-700",
-    Rejected:
-      "bg-red-50 text-red-700",
-    Duplicate:
-      "bg-purple-50 text-purple-700",
+    Pending: "bg-[#FFF6E5] text-[#A46308] border border-[#F6D99D]",
+    "Under Review": "bg-[#FFF6E5] text-[#A46308] border border-[#F6D99D]",
+    Validated: "bg-[#EAF7F0] text-[#246748] border border-[#CBE8D7]",
+    "In Progress": "bg-[#EAF7F0] text-[#246748] border border-[#CBE8D7]",
+    Resolved: "bg-[#EAF7F0] text-[#246748] border border-[#CBE8D7]",
+    Rejected: "bg-[#FFF0F0] text-[#B42318] border border-[#F3C5C5]",
+    Duplicate: "bg-[#F3F7F5] text-[#5C7067] border border-[#DDE8E2]",
   };
 
   return (
     styles[status] ||
-    "bg-slate-100 text-slate-700"
+    "bg-[#F3F7F5] text-[#5C7067] border border-[#DDE8E2]"
   );
 };
 
 const getPriorityClass = (priority) => {
   const styles = {
-    Low: "bg-slate-100 text-slate-600",
-    Medium: "bg-blue-50 text-blue-700",
-    High: "bg-orange-50 text-orange-700",
-    Critical: "bg-red-50 text-red-700",
+    Low: "bg-[#F3F7F5] text-[#5C7067] border border-[#DDE8E2]",
+    Medium: "bg-[#EAF7F0] text-[#246748] border border-[#CBE8D7]",
+    High: "bg-[#FFF6E5] text-[#A46308] border border-[#F6D99D]",
+    Critical: "bg-[#FFF0F0] text-[#B42318] border border-[#F3C5C5]",
   };
 
   return (
     styles[priority] ||
-    "bg-slate-100 text-slate-700"
+    "bg-[#F3F7F5] text-[#5C7067] border border-[#DDE8E2]"
   );
 };
 
@@ -535,7 +529,7 @@ const SectionTitle = ({
   count,
 }) => (
   <div className="mb-4 flex items-center justify-between">
-    <h2 className="text-[16px] font-semibold text-[#172B3A]">
+    <h2 className="text-[16px] font-semibold text-[#18352A]">
       {title}
     </h2>
 
@@ -601,6 +595,29 @@ export default function GovernmentProblemDetails() {
     setSelectedMedia,
   ] = useState(null);
 
+  const [analyzing, setAnalyzing] = useState(false);
+  const [aiNotice, setAiNotice] = useState("");
+
+  const handleRerunAI = async () => {
+    try {
+      setAnalyzing(true);
+      setAiNotice("");
+      const res = await api.post(`/problems/${id}/analyze`);
+      if (res.data?.success && res.data.problem) {
+        setProblem(res.data.problem);
+        setAiNotice("AI analysis and university matches successfully updated!");
+      }
+    } catch (err) {
+      console.error("Re-run AI error:", err);
+      setError(
+        err?.response?.data?.message ||
+        "Unable to run AI analysis. Please ensure the Python service is running on port 8000."
+      );
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
   /*
    |--------------------------------------------------------------------------
    | FETCH PROBLEM
@@ -646,7 +663,7 @@ export default function GovernmentProblemDetails() {
 
       setError(
         err?.response?.data?.message ||
-          "Unable to load complaint details."
+        "Unable to load complaint details."
       );
     } finally {
       setLoading(false);
@@ -706,7 +723,7 @@ export default function GovernmentProblemDetails() {
 
       setError(
         err?.response?.data?.message ||
-          "Unable to update complaint."
+        "Unable to update complaint."
       );
     } finally {
       setSaving(false);
@@ -785,8 +802,8 @@ export default function GovernmentProblemDetails() {
 
       ...(validationStatus
         ? {
-            validationStatus,
-          }
+          validationStatus,
+        }
         : {}),
     });
   };
@@ -930,7 +947,7 @@ export default function GovernmentProblemDetails() {
             onClick={() =>
               navigate(-1)
             }
-            className="mt-4 rounded-lg bg-[#2477B5] px-4 py-2.5 text-[13px] font-semibold text-white hover:bg-[#1d659b]"
+            className="mt-4 rounded-lg bg-[#2E7D5B] px-4 py-2.5 text-[13px] font-semibold text-white hover:bg-[#1d659b]"
           >
             Go Back
           </button>
@@ -950,10 +967,10 @@ export default function GovernmentProblemDetails() {
   )
     ? problem.activity
     : Array.isArray(
-        problem.activities
-      )
-    ? problem.activities
-    : [];
+      problem.activities
+    )
+      ? problem.activities
+      : [];
 
   const sortedActivity = [
     ...activity,
@@ -974,7 +991,7 @@ export default function GovernmentProblemDetails() {
    */
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC]">
+    <div className="min-h-screen bg-[#F7FBF8]">
       <div className="mx-auto max-w-7xl px-5 py-6">
 
         {/* ==================================================
@@ -1000,7 +1017,7 @@ export default function GovernmentProblemDetails() {
                 Government Dashboard
               </p>
 
-              <h1 className="mt-0.5 text-[20px] font-bold text-[#172B3A]">
+              <h1 className="mt-0.5 text-[20px] font-bold text-[#18352A]">
                 Complaint Details
               </h1>
             </div>
@@ -1061,7 +1078,7 @@ export default function GovernmentProblemDetails() {
 
                 </div>
 
-                <h2 className="mt-3 text-[22px] font-bold leading-tight text-[#172B3A]">
+                <h2 className="mt-3 text-[22px] font-bold leading-tight text-[#18352A]">
                   {problem.title ||
                     problem.subject ||
                     "Untitled Complaint"}
@@ -1091,7 +1108,7 @@ export default function GovernmentProblemDetails() {
                   Reported{" "}
                   {getRelativeTime(
                     problem.createdAt ||
-                      problem.reportedAt
+                    problem.reportedAt
                   )}
                 </p>
 
@@ -1112,7 +1129,7 @@ export default function GovernmentProblemDetails() {
               label="Reported On"
               value={formatDate(
                 problem.createdAt ||
-                  problem.reportedAt
+                problem.reportedAt
               )}
             />
 
@@ -1264,13 +1281,12 @@ export default function GovernmentProblemDetails() {
                         {/* IMAGE */}
 
                         {item.type ===
-                        "image" ? (
+                          "image" ? (
 
                           <img
                             src={item.url}
-                            alt={`Complaint evidence ${
-                              index + 1
-                            }`}
+                            alt={`Complaint evidence ${index + 1
+                              }`}
                             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                             onError={(
                               event
@@ -1348,7 +1364,7 @@ export default function GovernmentProblemDetails() {
 
                           <p className="text-left text-[11px] font-medium text-white">
                             {item.type ===
-                            "video"
+                              "video"
                               ? "Open video"
                               : "Open photo"}
                           </p>
@@ -1408,6 +1424,176 @@ export default function GovernmentProblemDetails() {
 
             </section>
 
+
+            {/* ==================================================
+                RECOMMENDED UNIVERSITIES & HEIs (Module 3)
+            ================================================== */}
+
+            <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4 mb-5">
+                <div>
+                  <h2 className="text-[17px] font-bold text-[#18352A]">
+                    Recommended Universities & Institutions (HEIs)
+                  </h2>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Ranked against 25 Higher Education Institutions using multi-criteria domain, research, and capability matching.
+                  </p>
+                </div>
+
+                {problem.aiAnalysis?.universityMatches?.length > 0 && (
+                  <span className="self-start sm:self-auto rounded-full bg-purple-50 text-purple-700 border border-purple-200 px-3 py-1 text-xs font-bold">
+                    {problem.aiAnalysis.universityMatches.length} Matches Found
+                  </span>
+                )}
+              </div>
+
+              {/* Case 1: Government Routing Bypass */}
+              {(problem.aiAnalysis?.routingType || problem.aiAnalysis?.structuredProblem?.classification?.routingType) === "GOVERNMENT" ? (
+                <div className="rounded-xl bg-blue-50/60 border border-blue-200 p-5 text-center">
+                  <div className="text-3xl mb-2">🏛️</div>
+                  <h3 className="font-bold text-blue-900 text-sm">
+                    Municipal / Public Service Routing
+                  </h3>
+                  <p className="mt-1 text-xs text-blue-700 max-w-lg mx-auto leading-relaxed">
+                    This problem is classified as routine municipal or civic infrastructure responsibility. University innovation matching is bypassed per state policy so public works departments can resolve directly.
+                  </p>
+                </div>
+              ) : !problem.aiAnalysis?.universityMatches || problem.aiAnalysis.universityMatches.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
+                  <div className="text-3xl mb-2">🏫</div>
+                  <h3 className="font-bold text-slate-700 text-sm">
+                    No University Matches Calculated Yet
+                  </h3>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Click "Re-run AI Analysis" above to evaluate this problem against the 25 Higher Education Institutions.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {problem.aiAnalysis.universityMatches.map((match, index) => {
+                    const rank = match.rank || index + 1;
+                    const score = match.totalMatchScore || match.overallScore || 0;
+                    const breakdown = match.scoreBreakdown || {};
+                    const matchedDomains = match.matchedElements?.matchedDomains || [];
+                    const matchedResearch = match.matchedElements?.matchedResearch || [];
+                    const matchedSkills = match.matchedElements?.matchedSkills || [];
+
+                    return (
+                      <div
+                        key={match.id || index}
+                        className="rounded-xl border border-slate-200 p-4 transition hover:border-[#2E7D5B]/40 hover:shadow-sm"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                          <div className="flex items-start gap-3">
+                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#18352A] text-xs font-black text-white">
+                              #{rank}
+                            </span>
+                            <div>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <h3 className="text-sm font-bold text-slate-800">
+                                  {match.name}
+                                </h3>
+                                {match.type && (
+                                  <span className="rounded px-2 py-0.5 text-[10px] font-semibold bg-slate-100 text-slate-600">
+                                    {match.type}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-slate-500 mt-0.5">
+                                {match.city}{match.state ? `, ${match.state}` : ""}
+                              </p>
+                              {match.email && (
+                                <p className="mt-1 text-xs font-medium text-[#2E7D5B]">
+                                  University login: {match.email}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 self-start sm:self-auto">
+                            <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-right">
+                              <span className="text-sm font-black text-emerald-800">
+                                {score}
+                              </span>
+                              <span className="text-[10px] font-bold text-emerald-600">
+                                {" "}/ 100 Match
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Multi-Factor Score Breakdown */}
+                        <div className="mt-3.5 grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-[10px] bg-slate-50 rounded-lg p-2.5 border border-slate-100">
+                          <div>
+                            <p className="text-slate-400 font-semibold uppercase">Domain Align</p>
+                            <p className="font-bold text-slate-800 mt-0.5">
+                              {breakdown.domainAlignment !== undefined ? `${breakdown.domainAlignment}/35` : "—"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400 font-semibold uppercase">Research Match</p>
+                            <p className="font-bold text-slate-800 mt-0.5">
+                              {breakdown.researchMatch !== undefined ? `${breakdown.researchMatch}/25` : "—"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400 font-semibold uppercase">Skill Overlap</p>
+                            <p className="font-bold text-slate-800 mt-0.5">
+                              {breakdown.skillOverlap !== undefined ? `${breakdown.skillOverlap}/15` : "—"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400 font-semibold uppercase">Capabilities</p>
+                            <p className="font-bold text-slate-800 mt-0.5">
+                              {breakdown.capabilityScore !== undefined ? `${breakdown.capabilityScore}/15` : "—"}
+                            </p>
+                          </div>
+                          <div className="col-span-2 sm:col-span-1">
+                            <p className="text-slate-400 font-semibold uppercase">Regional Bonus</p>
+                            <p className="font-bold text-slate-800 mt-0.5">
+                              {breakdown.regionalAffinity !== undefined ? `+${breakdown.regionalAffinity}` : "—"}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Matching Elements */}
+                        {(matchedDomains.length > 0 || matchedResearch.length > 0 || matchedSkills.length > 0) && (
+                          <div className="mt-3 flex flex-wrap gap-1.5 items-center">
+                            <span className="text-[11px] font-bold text-slate-500 mr-1">
+                              Why Matched:
+                            </span>
+                            {matchedDomains.map((d, i) => (
+                              <span key={i} className="rounded bg-blue-50 text-blue-700 px-2 py-0.5 text-[10px] font-medium border border-blue-100">
+                                ✓ {d}
+                              </span>
+                            ))}
+                            {matchedResearch.map((r, i) => (
+                              <span key={i} className="rounded bg-purple-50 text-purple-700 px-2 py-0.5 text-[10px] font-medium border border-purple-100">
+                                ✓ Research: {r}
+                              </span>
+                            ))}
+                            {matchedSkills.map((s, i) => (
+                              <span key={i} className="rounded bg-emerald-50 text-emerald-700 px-2 py-0.5 text-[10px] font-medium border border-emerald-100">
+                                ✓ Skill: {s}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {match.prototypeNotes && (
+                          <p className="mt-2.5 text-[11px] text-slate-500 italic bg-white p-2 rounded border border-slate-100">
+                            💡 {match.prototypeNotes}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+            </section>
+
           </div>
 
           {/* ==================================================
@@ -1442,7 +1628,7 @@ export default function GovernmentProblemDetails() {
                       )
                     }
                     disabled={saving}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-[14px] text-slate-700 outline-none transition focus:border-[#2477B5] focus:ring-1 focus:ring-[#2477B5]/20 disabled:cursor-not-allowed disabled:bg-slate-50"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-[14px] text-slate-700 outline-none transition focus:border-[#2E7D5B] focus:ring-1 focus:ring-[#2E7D5B]/20 disabled:cursor-not-allowed disabled:bg-slate-50"
                   >
 
                     <option value="">
@@ -1464,10 +1650,10 @@ export default function GovernmentProblemDetails() {
 
                   {selectedDepartment !==
                     department && (
-                    <p className="mt-1.5 text-[11px] font-medium text-amber-600">
-                      Unsaved department change
-                    </p>
-                  )}
+                      <p className="mt-1.5 text-[11px] font-medium text-amber-600">
+                        Unsaved department change
+                      </p>
+                    )}
 
                 </div>
 
@@ -1489,7 +1675,7 @@ export default function GovernmentProblemDetails() {
                       )
                     }
                     disabled={saving}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-[14px] text-slate-700 outline-none transition focus:border-[#2477B5] focus:ring-1 focus:ring-[#2477B5]/20 disabled:cursor-not-allowed disabled:bg-slate-50"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-[14px] text-slate-700 outline-none transition focus:border-[#2E7D5B] focus:ring-1 focus:ring-[#2E7D5B]/20 disabled:cursor-not-allowed disabled:bg-slate-50"
                   >
 
                     {STATUS_OPTIONS.map(
@@ -1525,7 +1711,7 @@ export default function GovernmentProblemDetails() {
                       )
                     }
                     disabled={saving}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-[14px] text-slate-700 outline-none transition focus:border-[#2477B5] focus:ring-1 focus:ring-[#2477B5]/20 disabled:cursor-not-allowed disabled:bg-slate-50"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-[14px] text-slate-700 outline-none transition focus:border-[#2E7D5B] focus:ring-1 focus:ring-[#2E7D5B]/20 disabled:cursor-not-allowed disabled:bg-slate-50"
                   >
 
                     {PRIORITY_OPTIONS.map(
@@ -1554,7 +1740,7 @@ export default function GovernmentProblemDetails() {
                     saving ||
                     !selectedDepartment
                   }
-                  className="w-full rounded-lg bg-[#2477B5] px-3.5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#1d659b] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="w-full rounded-lg bg-[#2E7D5B] px-3.5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#1d659b] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving
                     ? "Saving..."
@@ -1634,7 +1820,7 @@ export default function GovernmentProblemDetails() {
 
             <div>
 
-              <h2 className="text-[16px] font-semibold text-[#172B3A]">
+              <h2 className="text-[16px] font-semibold text-[#18352A]">
                 Activity Timeline
               </h2>
 
@@ -1657,7 +1843,7 @@ export default function GovernmentProblemDetails() {
           <div className="h-[420px] overflow-y-auto px-6 py-6">
 
             {sortedActivity.length ===
-            0 ? (
+              0 ? (
 
               <div className="flex h-full items-center justify-center">
 
@@ -1687,9 +1873,9 @@ export default function GovernmentProblemDetails() {
                         className="relative pl-9"
                       >
 
-                        <div className="absolute left-0 top-0.5 z-10 flex h-[19px] w-[19px] items-center justify-center rounded-full border-2 border-[#2477B5] bg-white">
+                        <div className="absolute left-0 top-0.5 z-10 flex h-[19px] w-[19px] items-center justify-center rounded-full border-2 border-[#2E7D5B] bg-white">
 
-                          <div className="h-1.5 w-1.5 rounded-full bg-[#2477B5]" />
+                          <div className="h-1.5 w-1.5 rounded-full bg-[#2E7D5B]" />
 
                         </div>
 
@@ -1710,20 +1896,20 @@ export default function GovernmentProblemDetails() {
                                 {item
                                   .performedBy
                                   ?.name && (
-                                  <>
-                                    <span className="text-slate-300">
-                                      •
-                                    </span>
+                                    <>
+                                      <span className="text-slate-300">
+                                        •
+                                      </span>
 
-                                    <span className="text-[12px] text-slate-400">
-                                      {
-                                        item
-                                          .performedBy
-                                          .name
-                                      }
-                                    </span>
-                                  </>
-                                )}
+                                      <span className="text-[12px] text-slate-400">
+                                        {
+                                          item
+                                            .performedBy
+                                            .name
+                                        }
+                                      </span>
+                                    </>
+                                  )}
 
                               </div>
 
@@ -1797,34 +1983,34 @@ export default function GovernmentProblemDetails() {
                 {media[selectedMedia]
                   .type === "image" && (
 
-                  <img
-                    src={
-                      media[
-                        selectedMedia
-                      ].url
-                    }
-                    alt="Complaint evidence"
-                    className="max-h-full max-w-full rounded-xl object-contain"
-                  />
-                )}
+                    <img
+                      src={
+                        media[
+                          selectedMedia
+                        ].url
+                      }
+                      alt="Complaint evidence"
+                      className="max-h-full max-w-full rounded-xl object-contain"
+                    />
+                  )}
 
                 {/* VIDEO */}
 
                 {media[selectedMedia]
                   .type === "video" && (
 
-                  <video
-                    src={
-                      media[
-                        selectedMedia
-                      ].url
-                    }
-                    controls
-                    autoPlay
-                    playsInline
-                    className="max-h-full max-w-full rounded-xl"
-                  />
-                )}
+                    <video
+                      src={
+                        media[
+                          selectedMedia
+                        ].url
+                      }
+                      controls
+                      autoPlay
+                      playsInline
+                      className="max-h-full max-w-full rounded-xl"
+                    />
+                  )}
 
                 {/* UNKNOWN */}
 
@@ -1832,31 +2018,31 @@ export default function GovernmentProblemDetails() {
                   media[selectedMedia].type
                 ) && (
 
-                  <div className="rounded-xl bg-white p-8 text-center">
+                    <div className="rounded-xl bg-white p-8 text-center">
 
-                    <div className="text-3xl">
-                      📎
+                      <div className="text-3xl">
+                        📎
+                      </div>
+
+                      <p className="mt-3 text-sm text-slate-600">
+                        Unable to preview this file.
+                      </p>
+
+                      <a
+                        href={
+                          media[
+                            selectedMedia
+                          ].url
+                        }
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-4 inline-block rounded-lg bg-[#2E7D5B] px-4 py-2 text-sm font-semibold text-white"
+                      >
+                        Open File
+                      </a>
+
                     </div>
-
-                    <p className="mt-3 text-sm text-slate-600">
-                      Unable to preview this file.
-                    </p>
-
-                    <a
-                      href={
-                        media[
-                          selectedMedia
-                        ].url
-                      }
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-4 inline-block rounded-lg bg-[#2477B5] px-4 py-2 text-sm font-semibold text-white"
-                    >
-                      Open File
-                    </a>
-
-                  </div>
-                )}
+                  )}
 
                 {/* PREVIOUS */}
 
@@ -1868,7 +2054,7 @@ export default function GovernmentProblemDetails() {
                         (selectedMedia -
                           1 +
                           media.length) %
-                          media.length
+                        media.length
                       )
                     }
                     className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-2xl text-white backdrop-blur transition hover:bg-white/20"
@@ -1886,7 +2072,7 @@ export default function GovernmentProblemDetails() {
                       setSelectedMedia(
                         (selectedMedia +
                           1) %
-                          media.length
+                        media.length
                       )
                     }
                     className="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-2xl text-white backdrop-blur transition hover:bg-white/20"

@@ -6,11 +6,11 @@ function RoleRoute({ allowedRoles }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-[#F7FBF8]">
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-[#2477B5] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-10 h-10 border-4 border-[#2E7D5B] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
 
-          <p className="text-[#64748B]">
+          <p className="text-[#667A70] text-sm font-medium">
             Loading your dashboard...
           </p>
         </div>

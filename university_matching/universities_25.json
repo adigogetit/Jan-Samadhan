@@ -1,0 +1,1190 @@
+{
+  "dataset_name": "jharkhand_and_national_university_prototype",
+  "version": "2.0",
+  "last_verified_context": "2026-09",
+  "purpose": "Prototype university matching dataset; scores are prototype priors and must not be presented as official institutional ratings.",
+  "nirf_source_year": 2025,
+  "universities": [
+    {
+      "id": "HEI001",
+      "name": "Indian Institute of Technology (Indian School of Mines), Dhanbad",
+      "shortName": "IIT (ISM) Dhanbad",
+      "type": "Institute of National Importance",
+      "city": "Dhanbad",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": 35,
+        "engineering_rank": 15,
+        "research_rank": 27
+      },
+      "domains": [
+        "Mining & Mineral Technology",
+        "Environment & Climate",
+        "Water Resources",
+        "AI & Data Science",
+        "Civil Infrastructure",
+        "Energy"
+      ],
+      "researchAreas": [
+        "Mining engineering",
+        "geology",
+        "mineral processing",
+        "environmental engineering",
+        "remote sensing",
+        "AI and data science",
+        "water and earth sciences"
+      ],
+      "skills": [
+        "AI/ML",
+        "IoT",
+        "GIS",
+        "Remote Sensing",
+        "Civil Engineering",
+        "Environmental Engineering",
+        "Geology",
+        "Mining Engineering"
+      ],
+      "capabilities": {
+        "research": 98,
+        "faculty_match": 98,
+        "labs": 98,
+        "projects": 95,
+        "industry_collaboration": 96,
+        "incubation": 92
+      },
+      "prototype_notes": "Strong choice for mining, environment, geospatial, water and engineering-heavy challenges."
+    },
+    {
+      "id": "HEI002",
+      "name": "Birla Institute of Technology, Mesra",
+      "shortName": "BIT Mesra",
+      "type": "Deemed University",
+      "city": "Ranchi",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": 92,
+        "engineering_rank": 51,
+        "management_rank": 25
+      },
+      "domains": [
+        "AI & Digital Technology",
+        "Electronics & IoT",
+        "Energy",
+        "Civil Infrastructure",
+        "Healthcare Technology",
+        "Entrepreneurship"
+      ],
+      "researchAreas": [
+        "computer science",
+        "artificial intelligence",
+        "electronics",
+        "remote sensing",
+        "biotechnology",
+        "civil engineering",
+        "energy",
+        "management"
+      ],
+      "skills": [
+        "AI/ML",
+        "Computer Vision",
+        "IoT",
+        "Software Engineering",
+        "Electronics",
+        "Data Science",
+        "Civil Engineering",
+        "Entrepreneurship"
+      ],
+      "capabilities": {
+        "research": 93,
+        "faculty_match": 94,
+        "labs": 93,
+        "projects": 91,
+        "industry_collaboration": 91,
+        "incubation": 94
+      },
+      "prototype_notes": "Broad multidisciplinary technology fit; especially useful for AI, IoT, software, electronics and entrepreneurship."
+    },
+    {
+      "id": "HEI003",
+      "name": "National Institute of Technology Jamshedpur",
+      "shortName": "NIT Jamshedpur",
+      "type": "Institute of National Importance",
+      "city": "Jamshedpur",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "engineering_rank": 78
+      },
+      "domains": [
+        "AI & Digital Technology",
+        "Civil Infrastructure",
+        "Energy",
+        "Manufacturing",
+        "Electronics & IoT",
+        "Water Resources"
+      ],
+      "researchAreas": [
+        "computer science",
+        "electronics",
+        "civil engineering",
+        "mechanical engineering",
+        "electrical engineering",
+        "manufacturing",
+        "materials"
+      ],
+      "skills": [
+        "AI/ML",
+        "IoT",
+        "Embedded Systems",
+        "Civil Engineering",
+        "Mechanical Engineering",
+        "Electrical Engineering",
+        "Manufacturing",
+        "Materials Science"
+      ],
+      "capabilities": {
+        "research": 91,
+        "faculty_match": 92,
+        "labs": 92,
+        "projects": 91,
+        "industry_collaboration": 92,
+        "incubation": 88
+      },
+      "prototype_notes": "Strong engineering and manufacturing option for infrastructure, electronics, energy and digital challenges."
+    },
+    {
+      "id": "HEI004",
+      "name": "Birsa Agricultural University",
+      "shortName": "BAU",
+      "type": "State Agricultural University",
+      "city": "Ranchi",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": null,
+        "engineering_rank": null,
+        "research_rank": null
+      },
+      "domains": [
+        "Agriculture & Rural Technology",
+        "Animal Husbandry",
+        "Forestry",
+        "Water & Soil Management",
+        "Food Technology"
+      ],
+      "researchAreas": [
+        "agronomy",
+        "soil science",
+        "plant pathology",
+        "horticulture",
+        "agricultural engineering",
+        "forestry",
+        "animal sciences",
+        "fisheries"
+      ],
+      "skills": [
+        "Agronomy",
+        "Plant Pathology",
+        "Soil Science",
+        "Agricultural Engineering",
+        "Horticulture",
+        "Forestry",
+        "Animal Science",
+        "Food Technology"
+      ],
+      "capabilities": {
+        "research": 96,
+        "faculty_match": 97,
+        "labs": 94,
+        "projects": 94,
+        "industry_collaboration": 82,
+        "incubation": 80
+      },
+      "prototype_notes": "Primary specialist match for agriculture, farming, soil, crop disease, livestock and rural technology challenges."
+    },
+    {
+      "id": "HEI005",
+      "name": "Indian Institute of Management Ranchi",
+      "shortName": "IIM Ranchi",
+      "type": "Institute of National Importance",
+      "city": "Ranchi",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "management_rank": 18
+      },
+      "domains": [
+        "Livelihood & Entrepreneurship",
+        "Public Administration",
+        "Social Innovation",
+        "Supply Chain",
+        "Healthcare Management"
+      ],
+      "researchAreas": [
+        "management",
+        "entrepreneurship",
+        "operations",
+        "human resources",
+        "public policy",
+        "business analytics",
+        "social impact"
+      ],
+      "skills": [
+        "Entrepreneurship",
+        "Business Analytics",
+        "Operations",
+        "Supply Chain",
+        "Public Policy",
+        "Social Innovation",
+        "Impact Assessment"
+      ],
+      "capabilities": {
+        "research": 91,
+        "faculty_match": 94,
+        "labs": 80,
+        "projects": 92,
+        "industry_collaboration": 96,
+        "incubation": 92
+      },
+      "prototype_notes": "Best used for livelihood, entrepreneurship, public-service process, supply-chain and social-impact challenges rather than hardware problems."
+    },
+    {
+      "id": "HEI006",
+      "name": "Xavier School of Management",
+      "shortName": "XLRI Jamshedpur",
+      "type": "Private Higher Education Institution",
+      "city": "Jamshedpur",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "management_rank": 10
+      },
+      "domains": [
+        "Livelihood & Entrepreneurship",
+        "Workforce & Skills",
+        "Social Innovation",
+        "Public Systems",
+        "MSME Development"
+      ],
+      "researchAreas": [
+        "management",
+        "human resources",
+        "entrepreneurship",
+        "social responsibility",
+        "organizational behavior",
+        "business analytics"
+      ],
+      "skills": [
+        "Entrepreneurship",
+        "HR",
+        "Social Impact",
+        "Business Analytics",
+        "MSME Strategy",
+        "Organizational Development"
+      ],
+      "capabilities": {
+        "research": 93,
+        "faculty_match": 94,
+        "labs": 78,
+        "projects": 94,
+        "industry_collaboration": 98,
+        "incubation": 90
+      },
+      "prototype_notes": "Strong partner for entrepreneurship, workforce, MSME, social-impact and organizational/process innovation."
+    },
+    {
+      "id": "HEI007",
+      "name": "Central University of Jharkhand",
+      "shortName": "CUJ",
+      "type": "Central University",
+      "city": "Ranchi",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": null,
+        "engineering_rank": null,
+        "research_rank": null
+      },
+      "domains": [
+        "Education",
+        "Environment & Climate",
+        "Tribal Studies",
+        "Social Sciences",
+        "AI & Digital Technology"
+      ],
+      "researchAreas": [
+        "environmental science",
+        "education",
+        "computer science",
+        "social sciences",
+        "tribal studies",
+        "geography",
+        "life sciences"
+      ],
+      "skills": [
+        "Environmental Science",
+        "Education Technology",
+        "GIS",
+        "Social Research",
+        "Data Science",
+        "Life Sciences",
+        "Tribal Studies"
+      ],
+      "capabilities": {
+        "research": 88,
+        "faculty_match": 91,
+        "labs": 84,
+        "projects": 88,
+        "industry_collaboration": 76,
+        "incubation": 78
+      },
+      "prototype_notes": "Useful multidisciplinary option for education, environment, tribal/community and social-impact challenges."
+    },
+    {
+      "id": "HEI008",
+      "name": "BIT Sindri",
+      "shortName": "BIT Sindri",
+      "type": "Government Engineering Institute",
+      "city": "Dhanbad",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": null,
+        "engineering_rank": "201-300"
+      },
+      "domains": [
+        "Civil Infrastructure",
+        "Manufacturing",
+        "Energy",
+        "Electronics & IoT",
+        "Water Resources"
+      ],
+      "researchAreas": [
+        "civil engineering",
+        "mechanical engineering",
+        "electrical engineering",
+        "electronics",
+        "production engineering",
+        "chemical engineering"
+      ],
+      "skills": [
+        "Civil Engineering",
+        "Mechanical Engineering",
+        "Electrical Engineering",
+        "Electronics",
+        "Manufacturing",
+        "Industrial Automation"
+      ],
+      "capabilities": {
+        "research": 83,
+        "faculty_match": 88,
+        "labs": 87,
+        "projects": 88,
+        "industry_collaboration": 87,
+        "incubation": 78
+      },
+      "prototype_notes": "Good applied-engineering option for infrastructure, manufacturing, energy and practical field prototypes."
+    },
+    {
+      "id": "HEI009",
+      "name": "Indian Institute of Information Technology Ranchi",
+      "shortName": "IIIT Ranchi",
+      "type": "Institute of National Importance",
+      "city": "Ranchi",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": null,
+        "engineering_rank": null
+      },
+      "domains": [
+        "AI & Digital Technology",
+        "Cybersecurity",
+        "Smart Governance",
+        "Data Science",
+        "IoT"
+      ],
+      "researchAreas": [
+        "computer science",
+        "artificial intelligence",
+        "machine learning",
+        "data science",
+        "cybersecurity",
+        "IoT"
+      ],
+      "skills": [
+        "AI/ML",
+        "NLP",
+        "Computer Vision",
+        "Data Science",
+        "Cybersecurity",
+        "IoT",
+        "Software Engineering"
+      ],
+      "capabilities": {
+        "research": 87,
+        "faculty_match": 92,
+        "labs": 88,
+        "projects": 86,
+        "industry_collaboration": 82,
+        "incubation": 82
+      },
+      "prototype_notes": "Strong specialist match for AI, software, data, cybersecurity, digital governance and IoT challenges."
+    },
+    {
+      "id": "HEI010",
+      "name": "Ranchi University",
+      "shortName": "Ranchi University",
+      "type": "State University",
+      "city": "Ranchi",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": null,
+        "engineering_rank": null
+      },
+      "domains": [
+        "Education",
+        "Life Sciences",
+        "Environment",
+        "Social Innovation",
+        "Public Services"
+      ],
+      "researchAreas": [
+        "science",
+        "life sciences",
+        "education",
+        "social sciences",
+        "environmental studies",
+        "computer science"
+      ],
+      "skills": [
+        "Life Sciences",
+        "Education",
+        "Social Research",
+        "Environmental Science",
+        "Computer Science",
+        "Public Policy"
+      ],
+      "capabilities": {
+        "research": 82,
+        "faculty_match": 85,
+        "labs": 80,
+        "projects": 83,
+        "industry_collaboration": 72,
+        "incubation": 70
+      },
+      "prototype_notes": "Useful broad multidisciplinary option for education, environment, life sciences and social-development challenges."
+    },
+    {
+      "id": "HEI011",
+      "name": "National University of Study and Research in Law",
+      "shortName": "NUSRL Ranchi",
+      "type": "National Law University",
+      "city": "Ranchi",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "law_rank": 30
+      },
+      "domains": [
+        "Public Administration",
+        "Law & Governance",
+        "Accessibility",
+        "Digital Governance",
+        "Social Justice"
+      ],
+      "researchAreas": [
+        "constitutional law",
+        "public policy",
+        "governance",
+        "criminal justice",
+        "technology law",
+        "human rights"
+      ],
+      "skills": [
+        "Law",
+        "Public Policy",
+        "Governance",
+        "Legal Research",
+        "Technology Law",
+        "Social Justice"
+      ],
+      "capabilities": {
+        "research": 88,
+        "faculty_match": 94,
+        "labs": 70,
+        "projects": 86,
+        "industry_collaboration": 75,
+        "incubation": 72
+      },
+      "prototype_notes": "Specialist institution for legal, governance, public-service, rights and policy challenges."
+    },
+    {
+      "id": "HEI012",
+      "name": "Jharkhand University of Technology",
+      "shortName": "JUT Ranchi",
+      "type": "State Technical University",
+      "city": "Ranchi",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": null,
+        "engineering_rank": null
+      },
+      "domains": [
+        "Engineering",
+        "Technical Education",
+        "Infrastructure",
+        "Industry 4.0",
+        "Innovation"
+      ],
+      "researchAreas": [
+        "engineering education",
+        "applied engineering",
+        "technology",
+        "industry collaboration",
+        "innovation"
+      ],
+      "skills": [
+        "Engineering",
+        "Technology Management",
+        "Industry Collaboration",
+        "Innovation",
+        "Technical Education"
+      ],
+      "capabilities": {
+        "research": 78,
+        "faculty_match": 82,
+        "labs": 78,
+        "projects": 82,
+        "industry_collaboration": 84,
+        "incubation": 80
+      },
+      "prototype_notes": "Useful ecosystem-level technical partner and routing hub for applied engineering challenges."
+    },
+    {
+      "id": "HEI013",
+      "name": "Vinoba Bhave University",
+      "shortName": "VBU Hazaribagh",
+      "type": "State University",
+      "city": "Hazaribagh",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": null,
+        "engineering_rank": null
+      },
+      "domains": [
+        "Education",
+        "Environment",
+        "Life Sciences",
+        "Rural Development",
+        "Social Sciences"
+      ],
+      "researchAreas": [
+        "science",
+        "life sciences",
+        "environment",
+        "education",
+        "social sciences",
+        "rural development"
+      ],
+      "skills": [
+        "Life Sciences",
+        "Environmental Science",
+        "Education",
+        "Social Research",
+        "Rural Development"
+      ],
+      "capabilities": {
+        "research": 78,
+        "faculty_match": 82,
+        "labs": 76,
+        "projects": 79,
+        "industry_collaboration": 68,
+        "incubation": 68
+      },
+      "prototype_notes": "Useful regional partner for Hazaribagh-area education, environment, life-science and rural-development challenges."
+    },
+    {
+      "id": "HEI014",
+      "name": "Kolhan University",
+      "shortName": "Kolhan University",
+      "type": "State University",
+      "city": "Chaibasa",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": null,
+        "engineering_rank": null
+      },
+      "domains": [
+        "Tribal Studies",
+        "Education",
+        "Rural Development",
+        "Environment",
+        "Social Sciences"
+      ],
+      "researchAreas": [
+        "tribal studies",
+        "social sciences",
+        "education",
+        "environment",
+        "rural development",
+        "life sciences"
+      ],
+      "skills": [
+        "Tribal Studies",
+        "Community Research",
+        "Education",
+        "Environment",
+        "Rural Development",
+        "Social Sciences"
+      ],
+      "capabilities": {
+        "research": 80,
+        "faculty_match": 86,
+        "labs": 74,
+        "projects": 82,
+        "industry_collaboration": 65,
+        "incubation": 65
+      },
+      "prototype_notes": "Strong contextual fit for community, tribal-region, education, environment and rural-development challenges in Kolhan."
+    },
+    {
+      "id": "HEI015",
+      "name": "Sido Kanhu Murmu University",
+      "shortName": "SKMU Dumka",
+      "type": "State University",
+      "city": "Dumka",
+      "state": "Jharkhand",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": null,
+        "engineering_rank": null
+      },
+      "domains": [
+        "Tribal Studies",
+        "Rural Development",
+        "Education",
+        "Agriculture",
+        "Environment"
+      ],
+      "researchAreas": [
+        "tribal studies",
+        "social sciences",
+        "education",
+        "rural development",
+        "life sciences",
+        "environment"
+      ],
+      "skills": [
+        "Community Research",
+        "Tribal Studies",
+        "Education",
+        "Rural Development",
+        "Environment",
+        "Life Sciences"
+      ],
+      "capabilities": {
+        "research": 78,
+        "faculty_match": 84,
+        "labs": 72,
+        "projects": 80,
+        "industry_collaboration": 64,
+        "incubation": 64
+      },
+      "prototype_notes": "Strong contextual routing option for Santhal Pargana-region community, tribal, education and rural-development challenges."
+    },
+    {
+      "id": "HEI016",
+      "name": "Indian Institute of Science",
+      "shortName": "IISc Bengaluru",
+      "type": "Institute of National Importance",
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": 2,
+        "engineering_rank": null,
+        "research_rank": null
+      },
+      "domains": [
+        "AI & Data Science",
+        "Healthcare & Biotechnology",
+        "Water Resources",
+        "Environment & Climate",
+        "Energy",
+        "Advanced Materials"
+      ],
+      "researchAreas": [
+        "artificial intelligence",
+        "data science",
+        "biotechnology",
+        "healthcare",
+        "materials science",
+        "climate science",
+        "water",
+        "energy"
+      ],
+      "skills": [
+        "AI/ML",
+        "Data Science",
+        "Biotechnology",
+        "Materials Science",
+        "Climate Science",
+        "Water Technology",
+        "Energy"
+      ],
+      "capabilities": {
+        "research": 100,
+        "faculty_match": 100,
+        "labs": 100,
+        "projects": 98,
+        "industry_collaboration": 96,
+        "incubation": 94
+      },
+      "prototype_notes": "Top-tier research institution; useful as an expert partner for highly research-intensive challenges."
+    },
+    {
+      "id": "HEI017",
+      "name": "Indian Institute of Technology Madras",
+      "shortName": "IIT Madras",
+      "type": "Institute of National Importance",
+      "city": "Chennai",
+      "state": "Tamil Nadu",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": 1,
+        "engineering_rank": 1,
+        "research_rank": null
+      },
+      "domains": [
+        "AI & Digital Technology",
+        "Healthcare Technology",
+        "Energy",
+        "Water",
+        "Advanced Manufacturing",
+        "Climate"
+      ],
+      "researchAreas": [
+        "AI",
+        "robotics",
+        "data science",
+        "healthcare technology",
+        "energy",
+        "water",
+        "manufacturing",
+        "materials"
+      ],
+      "skills": [
+        "AI/ML",
+        "Robotics",
+        "IoT",
+        "Data Science",
+        "Energy Systems",
+        "Water Technology",
+        "Manufacturing"
+      ],
+      "capabilities": {
+        "research": 100,
+        "faculty_match": 99,
+        "labs": 100,
+        "projects": 99,
+        "industry_collaboration": 99,
+        "incubation": 98
+      },
+      "prototype_notes": "Excellent cross-domain technology and engineering partner for complex innovation challenges."
+    },
+    {
+      "id": "HEI018",
+      "name": "Indian Institute of Technology Bombay",
+      "shortName": "IIT Bombay",
+      "type": "Institute of National Importance",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": 3,
+        "engineering_rank": 2,
+        "research_rank": null
+      },
+      "domains": [
+        "AI & Digital Technology",
+        "Energy",
+        "Urban Systems",
+        "Healthcare",
+        "Water",
+        "Advanced Materials"
+      ],
+      "researchAreas": [
+        "AI",
+        "computer science",
+        "energy",
+        "urban planning",
+        "transportation",
+        "materials",
+        "environment",
+        "healthcare"
+      ],
+      "skills": [
+        "AI/ML",
+        "Computer Vision",
+        "Urban Analytics",
+        "Energy",
+        "Materials Science",
+        "IoT",
+        "Data Science"
+      ],
+      "capabilities": {
+        "research": 100,
+        "faculty_match": 99,
+        "labs": 100,
+        "projects": 99,
+        "industry_collaboration": 99,
+        "incubation": 98
+      },
+      "prototype_notes": "Strong multidisciplinary technology, urban systems and engineering partner."
+    },
+    {
+      "id": "HEI019",
+      "name": "Indian Institute of Technology Kanpur",
+      "shortName": "IIT Kanpur",
+      "type": "Institute of National Importance",
+      "city": "Kanpur",
+      "state": "Uttar Pradesh",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": 5,
+        "engineering_rank": 5,
+        "research_rank": null
+      },
+      "domains": [
+        "AI & Digital Technology",
+        "Aerospace",
+        "Energy",
+        "Materials",
+        "Healthcare Technology",
+        "Infrastructure"
+      ],
+      "researchAreas": [
+        "AI",
+        "aerospace",
+        "robotics",
+        "materials",
+        "energy",
+        "civil engineering",
+        "biomedical engineering"
+      ],
+      "skills": [
+        "AI/ML",
+        "Robotics",
+        "Drones",
+        "Materials Science",
+        "Energy",
+        "Biomedical Engineering",
+        "Civil Engineering"
+      ],
+      "capabilities": {
+        "research": 99,
+        "faculty_match": 99,
+        "labs": 100,
+        "projects": 98,
+        "industry_collaboration": 97,
+        "incubation": 96
+      },
+      "prototype_notes": "Strong research-intensive option for advanced engineering, AI, robotics, materials and energy challenges."
+    },
+    {
+      "id": "HEI020",
+      "name": "Indian Institute of Technology Kharagpur",
+      "shortName": "IIT Kharagpur",
+      "type": "Institute of National Importance",
+      "city": "Kharagpur",
+      "state": "West Bengal",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": 6,
+        "engineering_rank": 3,
+        "research_rank": null
+      },
+      "domains": [
+        "Agriculture",
+        "AI & Digital Technology",
+        "Civil Infrastructure",
+        "Water",
+        "Environment",
+        "Mining"
+      ],
+      "researchAreas": [
+        "agriculture",
+        "AI",
+        "civil engineering",
+        "water resources",
+        "environment",
+        "mining",
+        "remote sensing"
+      ],
+      "skills": [
+        "AI/ML",
+        "Remote Sensing",
+        "GIS",
+        "Civil Engineering",
+        "Water Resources",
+        "Agricultural Technology",
+        "Mining"
+      ],
+      "capabilities": {
+        "research": 99,
+        "faculty_match": 99,
+        "labs": 99,
+        "projects": 98,
+        "industry_collaboration": 97,
+        "incubation": 96
+      },
+      "prototype_notes": "Especially useful for cross-domain rural, infrastructure, water, agriculture and geospatial challenges."
+    },
+    {
+      "id": "HEI021",
+      "name": "Indian Institute of Technology Delhi",
+      "shortName": "IIT Delhi",
+      "type": "Institute of National Importance",
+      "city": "New Delhi",
+      "state": "Delhi",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": 4,
+        "engineering_rank": 4,
+        "research_rank": null
+      },
+      "domains": [
+        "AI & Digital Technology",
+        "Healthcare",
+        "Energy",
+        "Urban Systems",
+        "Water",
+        "Environment"
+      ],
+      "researchAreas": [
+        "AI",
+        "computer science",
+        "biomedical engineering",
+        "energy",
+        "urban systems",
+        "water",
+        "environment"
+      ],
+      "skills": [
+        "AI/ML",
+        "Healthcare Technology",
+        "IoT",
+        "Urban Analytics",
+        "Energy",
+        "Water Technology"
+      ],
+      "capabilities": {
+        "research": 100,
+        "faculty_match": 99,
+        "labs": 100,
+        "projects": 99,
+        "industry_collaboration": 99,
+        "incubation": 98
+      },
+      "prototype_notes": "Strong broad technology and engineering partner, especially for scalable urban and digital solutions."
+    },
+    {
+      "id": "HEI022",
+      "name": "Indian Institute of Technology Roorkee",
+      "shortName": "IIT Roorkee",
+      "type": "Institute of National Importance",
+      "city": "Roorkee",
+      "state": "Uttarakhand",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": 7,
+        "engineering_rank": 6,
+        "research_rank": null
+      },
+      "domains": [
+        "Water Resources",
+        "Civil Infrastructure",
+        "Earthquake Engineering",
+        "Environment",
+        "AI & Digital Technology"
+      ],
+      "researchAreas": [
+        "water resources",
+        "hydrology",
+        "civil engineering",
+        "earthquake engineering",
+        "remote sensing",
+        "environment"
+      ],
+      "skills": [
+        "Hydrology",
+        "GIS",
+        "Remote Sensing",
+        "Civil Engineering",
+        "Disaster Management",
+        "AI/ML",
+        "Water Resources"
+      ],
+      "capabilities": {
+        "research": 99,
+        "faculty_match": 99,
+        "labs": 99,
+        "projects": 97,
+        "industry_collaboration": 95,
+        "incubation": 94
+      },
+      "prototype_notes": "Excellent specialist match for water, flood, infrastructure, geospatial and disaster-management challenges."
+    },
+    {
+      "id": "HEI023",
+      "name": "Banaras Hindu University",
+      "shortName": "BHU",
+      "type": "Central University",
+      "city": "Varanasi",
+      "state": "Uttar Pradesh",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": 10,
+        "engineering_rank": 14,
+        "research_rank": null
+      },
+      "domains": [
+        "Agriculture",
+        "Healthcare",
+        "Education",
+        "Environment",
+        "Water",
+        "Social Innovation"
+      ],
+      "researchAreas": [
+        "agriculture",
+        "medicine",
+        "life sciences",
+        "environment",
+        "education",
+        "social sciences",
+        "engineering"
+      ],
+      "skills": [
+        "Agriculture",
+        "Healthcare",
+        "Life Sciences",
+        "Environmental Science",
+        "Education",
+        "Engineering"
+      ],
+      "capabilities": {
+        "research": 98,
+        "faculty_match": 98,
+        "labs": 98,
+        "projects": 96,
+        "industry_collaboration": 91,
+        "incubation": 91
+      },
+      "prototype_notes": "Excellent multidisciplinary university for agriculture, healthcare, education, environment and social-impact challenges."
+    },
+    {
+      "id": "HEI024",
+      "name": "University of Hyderabad",
+      "shortName": "UoH",
+      "type": "Central University",
+      "city": "Hyderabad",
+      "state": "Telangana",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": 17,
+        "engineering_rank": null,
+        "research_rank": null
+      },
+      "domains": [
+        "AI & Data Science",
+        "Life Sciences",
+        "Environment",
+        "Healthcare",
+        "Education",
+        "Social Sciences"
+      ],
+      "researchAreas": [
+        "life sciences",
+        "chemistry",
+        "physics",
+        "computer science",
+        "data science",
+        "environment",
+        "social sciences"
+      ],
+      "skills": [
+        "Data Science",
+        "AI/ML",
+        "Life Sciences",
+        "Environmental Science",
+        "Chemistry",
+        "Social Research"
+      ],
+      "capabilities": {
+        "research": 96,
+        "faculty_match": 96,
+        "labs": 96,
+        "projects": 94,
+        "industry_collaboration": 88,
+        "incubation": 88
+      },
+      "prototype_notes": "Strong research university for science, life sciences, environment, data and social research challenges."
+    },
+    {
+      "id": "HEI025",
+      "name": "Indian Institute of Technology Hyderabad",
+      "shortName": "IIT Hyderabad",
+      "type": "Institute of National Importance",
+      "city": "Hyderabad",
+      "state": "Telangana",
+      "nirf": {
+        "year": 2025,
+        "overall_rank": 89,
+        "engineering_rank": 7,
+        "research_rank": null
+      },
+      "domains": [
+        "AI & Digital Technology",
+        "Healthcare Technology",
+        "Advanced Manufacturing",
+        "Energy",
+        "Electronics"
+      ],
+      "researchAreas": [
+        "AI",
+        "machine learning",
+        "electronics",
+        "robotics",
+        "biomedical engineering",
+        "materials",
+        "energy"
+      ],
+      "skills": [
+        "AI/ML",
+        "Robotics",
+        "Electronics",
+        "Biomedical Engineering",
+        "Materials Science",
+        "Energy"
+      ],
+      "capabilities": {
+        "research": 97,
+        "faculty_match": 97,
+        "labs": 98,
+        "projects": 95,
+        "industry_collaboration": 94,
+        "incubation": 94
+      },
+      "prototype_notes": "Strong engineering and technology partner for AI, electronics, robotics, healthcare and advanced manufacturing."
+    }
+  ],
+  "notes": "15 Jharkhand-focused HEIs plus 10 national benchmark/extended-collaboration institutions. Prototype capability scores are illustrative, not official institutional ratings. NIRF values are 2025 where applicable."
+}

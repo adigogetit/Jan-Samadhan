@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   Handshake,
@@ -21,15 +21,15 @@ const STATUS_FILTERS = ["All", "Pending", "Accepted", "Rejected", "Withdrawn"];
 const getStatusBadge = (status) => {
   switch (status) {
     case "Pending":
-      return "bg-amber-50 text-amber-700 border-amber-200";
+      return "bg-[#FFF6E5] text-[#A46308] border-[#F6D99D]";
     case "Accepted":
-      return "bg-emerald-50 text-emerald-700 border-emerald-200";
+      return "bg-[#EAF7F0] text-[#246748] border-[#CBE8D7]";
     case "Rejected":
-      return "bg-red-50 text-red-700 border-red-200";
+      return "bg-[#FFF0F0] text-[#B42318] border-[#F3C5C5]";
     case "Withdrawn":
-      return "bg-slate-100 text-slate-600 border-slate-200";
+      return "bg-[#F3F7F5] text-[#5C7067] border-[#DDE8E2]";
     default:
-      return "bg-slate-100 text-slate-700 border-slate-200";
+      return "bg-[#F3F7F5] text-[#5C7067] border-[#DDE8E2]";
   }
 };
 
@@ -81,7 +81,7 @@ export default function InvestorInterests() {
       console.error("Failed to load investor interests:", err);
       setError(
         err.response?.data?.message ||
-          "Unable to load partnership interests. Please try again."
+        "Unable to load partnership interests. Please try again."
       );
     } finally {
       setLoading(false);
@@ -109,7 +109,7 @@ export default function InvestorInterests() {
       console.error("Withdraw interest error:", err);
       setError(
         err.response?.data?.message ||
-          "Unable to withdraw request. Please try again."
+        "Unable to withdraw request. Please try again."
       );
     } finally {
       setActionLoadingId(null);
@@ -127,7 +127,7 @@ export default function InvestorInterests() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-slate-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-[calc(100vh-64px)] bg-[#F7FBF8] p-4 md:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl">
 
         {/* =====================================================
@@ -136,7 +136,7 @@ export default function InvestorInterests() {
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-[#172B3A] md:text-3xl">
+              <h1 className="text-2xl font-bold text-[#18352A] md:text-3xl">
                 My Partnership Interests
               </h1>
               {!loading && (
@@ -153,13 +153,13 @@ export default function InvestorInterests() {
           <div className="flex items-center gap-3">
             <Link
               to="/investor/projects"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[#172B3A] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#23445A]"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#18352A] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#23445A]"
             >
               Browse Projects <ArrowRight size={14} />
             </Link>
             <button
               onClick={loadInterests}
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-[#F7FBF8]"
             >
               <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
             </button>
@@ -179,11 +179,10 @@ export default function InvestorInterests() {
               <button
                 key={status}
                 onClick={() => handleFilterChange(status)}
-                className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
-                  isActive
-                    ? "bg-[#172B3A] text-white shadow-sm"
+                className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${isActive
+                    ? "bg-[#18352A] text-white shadow-sm"
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
+                  }`}
               >
                 {status}
               </button>
@@ -231,7 +230,7 @@ export default function InvestorInterests() {
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
               <Handshake size={32} />
             </div>
-            <h2 className="mt-4 text-lg font-bold text-[#172B3A]">
+            <h2 className="mt-4 text-lg font-bold text-[#18352A]">
               {selectedStatus !== "All"
                 ? `No ${selectedStatus} Interest Requests`
                 : "No Partnership Requests Yet"}
@@ -243,7 +242,7 @@ export default function InvestorInterests() {
             </p>
             <Link
               to="/investor/projects"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#172B3A] px-5 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#23445A]"
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#18352A] px-5 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#23445A]"
             >
               Explore Available Projects <ArrowRight size={14} />
             </Link>
@@ -283,10 +282,10 @@ export default function InvestorInterests() {
                       </div>
 
                       {/* Project Title */}
-                      <h2 className="text-lg font-bold text-[#172B3A] pt-1">
+                      <h2 className="text-lg font-bold text-[#18352A] pt-1">
                         <Link
                           to={`/investor/projects/${proj._id}`}
-                          className="hover:text-[#1F6F8B] hover:underline"
+                          className="hover:text-[#2E7D5B] hover:underline"
                         >
                           {proj.title || "Project details unavailable"}
                         </Link>
@@ -323,7 +322,7 @@ export default function InvestorInterests() {
                       <div className="flex items-center gap-2 pt-1">
                         <Link
                           to={`/investor/projects/${proj._id}`}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-[#1F6F8B] hover:underline"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-[#2E7D5B] hover:underline"
                         >
                           View Project <ArrowRight size={12} />
                         </Link>
@@ -350,7 +349,7 @@ export default function InvestorInterests() {
 
                   {/* Message Quote */}
                   {item.message && (
-                    <div className="mt-4 rounded-xl bg-slate-50 p-3 text-xs text-slate-700 border border-slate-100">
+                    <div className="mt-4 rounded-xl bg-[#F7FBF8] p-3 text-xs text-slate-700 border border-slate-100">
                       <p className="font-semibold text-slate-500 text-[11px] uppercase tracking-wider mb-1">
                         Proposal / Message:
                       </p>

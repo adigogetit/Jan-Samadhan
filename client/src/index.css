@@ -6,14 +6,19 @@
    ========================================================= */
 
 :root {
-  /* ONE MAIN BRAND COLOR */
-  --brand-blue: #06a35e;
+  /* PRIMARY BRAND GREEN */
+  --brand-blue: #2E7D5B;
+  --brand-green: #2E7D5B;
+  --brand-green-dark: #18352A;
+  --brand-green-light: #EAF7F0;
+  --brand-green-bg: #F7FBF8;
+  --brand-green-border: #DDEDE4;
 
   /* BASIC COLORS */
   --brand-white: #ffffff;
-  --brand-text: #070808;
-  --brand-gray: #393b3f;
-  --brand-border: #979ca1;
+  --brand-text: #18352A;
+  --brand-gray: #667A70;
+  --brand-border: #DDEDE4;
 
   font-family:
     Inter,
@@ -35,18 +40,18 @@
    ========================================================= */
 
 @theme inline {
-  --color-primary: var(--brand-blue);
+  --color-primary: var(--brand-green);
 
-  --color-background: var(--brand-white);
+  --color-background: var(--brand-green-bg);
   --color-surface: var(--brand-white);
-  --color-surface-muted: var(--brand-white);
+  --color-surface-muted: var(--brand-green-bg);
 
   --color-text: var(--brand-text);
   --color-text-secondary: var(--brand-gray);
   --color-text-muted: var(--brand-gray);
 
   --color-border: var(--brand-border);
-  --color-border-light: var(--brand-border);
+  --color-border-light: var(--brand-green-border);
 }
 
 /* ============================================================
@@ -55,7 +60,7 @@
 
 .dashboard-scroll {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: #CFE7D8 transparent;
 }
 
 .dashboard-scroll::-webkit-scrollbar {
@@ -67,12 +72,12 @@
 }
 
 .dashboard-scroll::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #CFE7D8;
   border-radius: 999px;
 }
 
 .dashboard-scroll::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #A0C4AE;
 }
 
 /* =========================================================

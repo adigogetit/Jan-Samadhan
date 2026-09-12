@@ -35,13 +35,13 @@ import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
 
 function PlaceholderPage({ title }) {
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-white p-6 md:p-8">
+    <div className="min-h-full bg-[#F7FBF8] p-6 md:p-8">
       <div className="mx-auto max-w-7xl">
-        <h1 className="text-2xl font-bold text-[#172B3A]">
+        <h1 className="text-2xl font-black tracking-tight text-[#18352A]">
           {title}
         </h1>
 
-        <p className="mt-2 text-[#64748B]">
+        <p className="mt-2 text-sm text-[#667A70]">
           This page is protected and ready for the full module.
         </p>
       </div>

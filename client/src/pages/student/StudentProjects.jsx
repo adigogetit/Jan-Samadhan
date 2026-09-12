@@ -1,22 +1,26 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   FolderGit2,
   Search,
-  Filter,
   CheckCircle2,
   Clock,
   Calendar,
-  Building2,
   UserCheck,
   ArrowRight,
   RefreshCw,
-  AlertCircle,
-  X,
-  Layers,
+  FileText,
+  User,
+  Users,
 } from "lucide-react";
 import api from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
+
+import PageHeader from "../../components/ui/PageHeader";
+import StatusBadge from "../../components/ui/StatusBadge";
+import EmptyState from "../../components/ui/EmptyState";
+import LoadingState from "../../components/ui/LoadingState";
+import AlertBanner from "../../components/ui/AlertBanner";
 
 const STATUS_FILTERS = [
   "All",
@@ -27,27 +31,6 @@ const STATUS_FILTERS = [
   "Deployment",
   "Completed",
 ];
-
-const getStatusBadge = (status) => {
-  switch (status) {
-    case "Planning":
-      return "bg-slate-100 text-slate-700 border-slate-200";
-    case "Development":
-      return "bg-blue-50 text-blue-700 border-blue-200";
-    case "Testing":
-      return "bg-amber-50 text-amber-700 border-amber-200";
-    case "Pilot":
-      return "bg-purple-50 text-purple-700 border-purple-200";
-    case "Deployment":
-      return "bg-cyan-50 text-cyan-700 border-cyan-200";
-    case "Completed":
-      return "bg-emerald-50 text-emerald-700 border-emerald-200";
-    case "Cancelled":
-      return "bg-red-50 text-red-700 border-red-200";
-    default:
-      return "bg-slate-100 text-slate-700 border-slate-200";
-  }
-};
 
 const formatDate = (date) => {
   if (!date) return "Not set";
@@ -100,7 +83,7 @@ export default function StudentProjects() {
       console.error("Failed to load student projects:", err);
       setError(
         err.response?.data?.message ||
-          "Unable to load student projects. Please try again."
+        "Unable to load projects. Please try again later."
       );
     } finally {
       setLoading(false);
@@ -112,7 +95,7 @@ export default function StudentProjects() {
     loadProjects();
   };
 
-  const handleFilterChange = (status) => {
+  const handleStatusFilterChange = (status) => {
     setSelectedStatus(status);
     if (status === "All") {
       searchParams.delete("status");
@@ -129,298 +112,186 @@ export default function StudentProjects() {
     );
   };
 
-  // Client-side search enhancement to instantly filter even before search submit
-  const filteredProjects = projects.filter((project) => {
-    if (!searchTerm.trim()) return true;
-    const term = searchTerm.toLowerCase().trim();
-    const titleMatch = project.title?.toLowerCase().includes(term);
-    const descMatch = project.description?.toLowerCase().includes(term);
-    const problemTitleMatch = project.problem?.title?.toLowerCase().includes(term);
-    const categoryMatch = (project.category || project.problem?.category)
-      ?.toLowerCase()
-      .includes(term);
-    const districtMatch = (project.district || project.problem?.district)
-      ?.toLowerCase()
-      .includes(term);
-
-    return (
-      titleMatch ||
-      descMatch ||
-      problemTitleMatch ||
-      categoryMatch ||
-      districtMatch
-    );
-  });
-
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-slate-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-full bg-[#F7FBF8] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="mx-auto max-w-7xl">
-
-        {/* =====================================================
-            HEADER
-        ====================================================== */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-[#172B3A] md:text-3xl">
-                My Assigned Projects
-              </h1>
-              {!loading && (
-                <span className="rounded-full bg-slate-200 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
-                  {projects.length}
-                </span>
-              )}
-            </div>
-            <p className="mt-1 text-sm text-slate-500">
-              Civic innovation projects assigned to you by your university administration.
-            </p>
-          </div>
-
+        {/* HEADER */}
+        <PageHeader
+          eyebrow="Student Innovation Portal"
+          title="My Assigned Projects"
+          description="View and build prototypes for all civic innovation initiatives you have been assigned to."
+          backPath="/student/dashboard"
+          backLabel="Back to Dashboard"
+        >
           <button
+            type="button"
             onClick={loadProjects}
-            className="inline-flex items-center gap-2 self-start rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+            className="flex items-center gap-2 rounded-xl border border-[#DDEDE4] bg-white px-3.5 py-2.5 text-xs font-bold text-[#5D7469] transition hover:bg-[#F2F8F4] hover:text-[#2E7D5B]"
+            title="Refresh"
           >
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-            Refresh
+            <span className="hidden sm:inline">Refresh</span>
           </button>
-        </div>
+        </PageHeader>
 
-        {/* =====================================================
-            SEARCH & FILTERS
-        ====================================================== */}
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          {/* Search Form */}
-          <form onSubmit={handleSearchSubmit} className="relative">
-            <Search
-              size={18}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-            />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by project title, source problem, category, or district..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-24 text-sm text-slate-800 placeholder-slate-400 focus:border-[#1F6F8B] focus:bg-white focus:outline-none"
-            />
-            {searchTerm && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchTerm("");
-                  loadProjects();
-                }}
-                className="absolute right-16 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-              >
-                <X size={16} />
-              </button>
-            )}
-            <button
-              type="submit"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg bg-[#172B3A] px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-[#23445A]"
-            >
-              Search
-            </button>
-          </form>
-
-          {/* Status Filter Pills */}
-          <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
-            <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1">
-              <Filter size={12} /> Filter:
-            </span>
-            {STATUS_FILTERS.map((status) => {
-              const isActive = selectedStatus === status;
-              return (
-                <button
-                  key={status}
-                  onClick={() => handleFilterChange(status)}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
-                    isActive
-                      ? "bg-[#172B3A] text-white shadow-sm"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  {status}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* =====================================================
-            ERROR BANNER
-        ====================================================== */}
+        {/* ERROR */}
         {error && (
-          <div className="mt-6 flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-            <AlertCircle size={20} className="text-red-600" />
-            <p className="font-medium">{error}</p>
+          <div className="mb-6">
+            <AlertBanner
+              type="error"
+              message={error}
+              onRetry={loadProjects}
+              onDismiss={() => setError("")}
+            />
           </div>
         )}
 
-        {/* =====================================================
-            PROJECT LIST / GRID
-        ====================================================== */}
-        {loading ? (
-          <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div
-                key={i}
-                className="animate-pulse rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-              >
-                <div className="flex justify-between">
-                  <div className="h-5 w-24 rounded-full bg-slate-200" />
-                  <div className="h-5 w-20 rounded-full bg-slate-200" />
-                </div>
-                <div className="mt-4 h-6 w-3/4 rounded bg-slate-200" />
-                <div className="mt-3 h-14 rounded bg-slate-100" />
-                <div className="mt-4 space-y-2">
-                  <div className="h-4 w-full rounded bg-slate-100" />
-                  <div className="h-4 w-2/3 rounded bg-slate-100" />
-                </div>
+        {/* SEARCH & FILTERS CARD */}
+        <div className="mb-8 rounded-[26px] border border-[#DDEDE4] bg-white p-5 sm:p-6 shadow-[0_8px_30px_rgba(24,53,42,0.045)]">
+          <form onSubmit={handleSearchSubmit} className="space-y-4">
+            {/* Search Input */}
+            <div className="flex gap-3">
+              <div className="relative flex-1">
+                <Search
+                  size={16}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#789087]"
+                />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search projects by title, description or problem keywords..."
+                  className="h-11 w-full rounded-xl border border-[#D7E8DE] bg-[#F7FBF8] pl-10 pr-4 text-xs font-medium text-[#18352A] outline-none transition placeholder:text-[#A0B0A8] focus:border-[#2E7D5B] focus:bg-white focus:ring-4 focus:ring-[#EAF7F0]"
+                />
               </div>
-            ))}
-          </div>
-        ) : filteredProjects.length === 0 ? (
-          <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-              <FolderGit2 size={32} />
-            </div>
-            <h2 className="mt-4 text-lg font-bold text-[#172B3A]">
-              {searchTerm || selectedStatus !== "All"
-                ? "No matching projects found"
-                : "No Assigned Projects"}
-            </h2>
-            <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">
-              {searchTerm || selectedStatus !== "All"
-                ? "Try clearing your filters or changing your search terms to see projects."
-                : "You have not been assigned to any university innovation projects yet. Check back soon or contact your faculty lead."}
-            </p>
-            {(searchTerm || selectedStatus !== "All") && (
+
               <button
-                onClick={() => {
-                  setSearchTerm("");
-                  setSelectedStatus("All");
-                  searchParams.delete("status");
-                  setSearchParams(searchParams);
-                }}
-                className="mt-5 inline-flex items-center gap-1.5 rounded-xl bg-[#172B3A] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#23445A]"
+                type="submit"
+                className="h-11 rounded-xl bg-[#2E7D5B] px-6 text-xs font-extrabold text-white shadow-[0_8px_20px_rgba(46,125,91,0.18)] transition hover:bg-[#246748]"
               >
-                Reset All Filters
+                Search
               </button>
-            )}
+            </div>
+
+            {/* Status Filter Pills */}
+            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+              {STATUS_FILTERS.map((status) => {
+                const active = selectedStatus === status;
+                return (
+                  <button
+                    key={status}
+                    type="button"
+                    onClick={() => handleStatusFilterChange(status)}
+                    className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${active
+                        ? "bg-[#2E7D5B] text-white shadow-sm"
+                        : "bg-[#F2F8F4] text-[#5D7469] hover:bg-[#EAF7F0] hover:text-[#2E7D5B]"
+                      }`}
+                  >
+                    {status}
+                  </button>
+                );
+              })}
+            </div>
+          </form>
+        </div>
+
+        {/* RESULTS SUMMARY */}
+        <div className="mb-4 flex items-center justify-between px-1">
+          <p className="text-xs font-bold text-[#789087]">
+            Showing <strong className="text-[#18352A]">{projects.length}</strong> assigned project{projects.length === 1 ? "" : "s"}
+          </p>
+        </div>
+
+        {/* PROJECTS GRID */}
+        {loading ? (
+          <LoadingState cards={3} />
+        ) : projects.length === 0 ? (
+          <div className="rounded-[26px] border border-[#DDEDE4] bg-white p-10">
+            <EmptyState
+              icon={<FolderGit2 size={32} />}
+              title="No projects match your search"
+              description="No innovation projects found with the current filters. Try changing your search keywords or status filter."
+              actionLabel="Reset Filters"
+              onAction={() => {
+                setSearchTerm("");
+                setSelectedStatus("All");
+                setSearchParams({});
+                loadProjects();
+              }}
+            />
           </div>
         ) : (
-          <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {filteredProjects.map((project) => {
-              const problem = project.problem || {};
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {projects.map((project) => {
               const accepted = isAcceptedByMe(project);
+              const facultyName =
+                project.facultyLead?.name ||
+                project.facultyLead?.email ||
+                "Unassigned";
 
               return (
                 <div
                   key={project._id}
-                  className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-md"
+                  className="group flex flex-col justify-between rounded-[24px] border border-[#DDEDE4] border-l-4 border-l-[#2E7D5B] bg-white p-5 shadow-[0_4px_18px_rgba(24,53,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(24,53,42,0.08)]"
                 >
                   <div>
-                    {/* Header: Project status badge & acceptance badge */}
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span
-                        className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getStatusBadge(
-                          project.status
-                        )}`}
-                      >
-                        {project.status || "Planning"}
-                      </span>
+                    {/* Header */}
+                    <div className="flex items-center justify-between gap-2">
+                      <StatusBadge status={project.status || "Planning"} size="sm" />
 
                       {accepted ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
-                          <CheckCircle2 size={12} /> Accepted
+                        <span className="inline-flex items-center gap-1 rounded-full bg-[#EAF7F0] border border-[#CBE8D7] px-2.5 py-0.5 text-[10px] font-bold text-[#246748]">
+                          <UserCheck size={11} />
+                          Accepted
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700 border border-amber-200">
-                          <Clock size={12} /> Pending Acceptance
+                        <span className="inline-flex items-center gap-1 rounded-full bg-[#FFF6E5] border border-[#F6D99D] px-2.5 py-0.5 text-[10px] font-bold text-[#A46308]">
+                          <Clock size={11} />
+                          Invitation Pending
                         </span>
                       )}
                     </div>
 
                     {/* Title */}
-                    <h2 className="mt-4 line-clamp-2 text-lg font-bold text-[#172B3A]">
+                    <h3 className="mt-3 text-base font-extrabold text-[#18352A] transition group-hover:text-[#2E7D5B] line-clamp-1">
                       {project.title}
-                    </h2>
+                    </h3>
+
+                    {/* Problem reference */}
+                    {project.problem?.title && (
+                      <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-[#789087] truncate">
+                        <FileText size={12} className="shrink-0 text-[#2E7D5B]" />
+                        <span>Problem: {project.problem.title}</span>
+                      </p>
+                    )}
 
                     {/* Description */}
-                    <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-slate-500">
+                    <p className="mt-2 text-xs leading-5 text-[#667A70] line-clamp-2">
                       {project.description || "No project description provided."}
                     </p>
 
-                    {/* Source Problem Block */}
-                    <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-3">
-                      <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                        Source Problem
-                      </p>
-                      <p className="mt-1 line-clamp-2 text-xs font-semibold text-slate-700">
-                        {problem.title || "Civic Grievance Information"}
-                      </p>
-                    </div>
+                    {/* Team Details */}
+                    <div className="mt-4 flex flex-wrap gap-2 text-[11px]">
+                      <span className="flex items-center gap-1 rounded-lg bg-[#F2F8F4] px-2.5 py-1 font-semibold text-[#4D6459]">
+                        <User size={12} className="text-[#2E7D5B]" />
+                        Faculty: {facultyName}
+                      </span>
 
-                    {/* Meta Fields */}
-                    <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
-                      <div>
-                        <p className="text-slate-400">Category</p>
-                        <p className="mt-0.5 font-medium text-slate-700 truncate">
-                          {project.category || problem.category || "General"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-slate-400">District</p>
-                        <p className="mt-0.5 font-medium text-slate-700 truncate">
-                          {project.district || problem.district || "Jharkhand"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-slate-400">University</p>
-                        <p className="mt-0.5 font-medium text-slate-700 truncate">
-                          {project.university?.name || "Assigned University"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-slate-400">Faculty Lead</p>
-                        <p className="mt-0.5 font-medium text-slate-700 truncate">
-                          {project.facultyLead?.name || "Not assigned"}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Timeline dates */}
-                    <div className="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-500 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-400">Start Date:</span>
-                        <span className="font-medium text-slate-600">
-                          {formatDate(project.startDate || project.createdAt)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-400">Expected Completion:</span>
-                        <span className="font-medium text-slate-600">
-                          {formatDate(project.expectedCompletionDate)}
-                        </span>
-                      </div>
+                      <span className="flex items-center gap-1 rounded-lg bg-[#F2F8F4] px-2.5 py-1 font-semibold text-[#4D6459]">
+                        <Users size={12} className="text-[#2E7D5B]" />
+                        {project.students?.length || 1} Student{(project.students?.length || 1) === 1 ? "" : "s"}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Card Footer: Team count & Link */}
-                  <div className="mt-5 border-t border-slate-100 pt-4 flex items-center justify-between">
-                    <span className="text-xs text-slate-400">
-                      {Array.isArray(project.students)
-                        ? `${project.students.length} Student${
-                            project.students.length === 1 ? "" : "s"
-                          }`
-                        : "Team member"}
-                    </span>
-
+                  {/* Footer */}
+                  <div className="mt-5 border-t border-[#EDF4F0] pt-3.5">
                     <Link
                       to={`/student/projects/${project._id}`}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-[#1F6F8B] hover:text-[#172B3A] transition"
+                      className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#2E7D5B] py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:bg-[#246748]"
                     >
-                      View Details <ArrowRight size={14} />
+                      <span>Open Workspace</span>
+                      <ArrowRight size={13} />
                     </Link>
                   </div>
                 </div>
@@ -428,7 +299,6 @@ export default function StudentProjects() {
             })}
           </div>
         )}
-
       </div>
     </div>
   );

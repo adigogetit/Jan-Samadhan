@@ -1,66 +1,26 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  ArrowRight,
+  Sparkles,
   FolderGit2,
   Activity,
   CheckCircle2,
   FlaskConical,
-  ArrowRight,
-  Sparkles,
-  Calendar,
   Building2,
   UserCheck,
   Clock,
-  AlertCircle,
   RefreshCw,
 } from "lucide-react";
 import api from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 
-const getStatusBadge = (status) => {
-  switch (status) {
-    case "Planning":
-      return "bg-slate-100 text-slate-700 border-slate-200";
-    case "Development":
-      return "bg-blue-50 text-blue-700 border-blue-200";
-    case "Testing":
-      return "bg-amber-50 text-amber-700 border-amber-200";
-    case "Pilot":
-      return "bg-purple-50 text-purple-700 border-purple-200";
-    case "Deployment":
-      return "bg-cyan-50 text-cyan-700 border-cyan-200";
-    case "Completed":
-      return "bg-emerald-50 text-emerald-700 border-emerald-200";
-    case "Cancelled":
-      return "bg-red-50 text-red-700 border-red-200";
-    default:
-      return "bg-slate-100 text-slate-700 border-slate-200";
-  }
-};
-
-const StatCard = ({ title, value, subtitle, icon: Icon, color, linkTo }) => {
-  const content = (
-    <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md">
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-          {title}
-        </p>
-        <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${color}`}>
-          <Icon size={20} />
-        </div>
-      </div>
-      <p className="mt-3 text-3xl font-bold text-[#172B3A]">{value}</p>
-      <p className="mt-1 text-xs text-slate-400">{subtitle}</p>
-      {linkTo && (
-        <div className="mt-3 flex items-center gap-1 text-xs font-medium text-[#1F6F8B] opacity-0 transition group-hover:opacity-100">
-          View projects <ArrowRight size={12} />
-        </div>
-      )}
-    </div>
-  );
-
-  return linkTo ? <Link to={linkTo}>{content}</Link> : content;
-};
+import PageHeader from "../../components/ui/PageHeader";
+import StatCard from "../../components/ui/StatCard";
+import StatusBadge from "../../components/ui/StatusBadge";
+import EmptyState from "../../components/ui/EmptyState";
+import LoadingState from "../../components/ui/LoadingState";
+import AlertBanner from "../../components/ui/AlertBanner";
 
 export default function StudentDashboard() {
   const { user } = useAuth();
@@ -106,7 +66,7 @@ export default function StudentDashboard() {
       console.error("Student dashboard error:", err);
       setError(
         err.response?.data?.message ||
-          "Unable to load student dashboard. Please check your connection."
+        "Unable to load student dashboard. Please check your connection."
       );
     } finally {
       setLoading(false);
@@ -121,309 +81,199 @@ export default function StudentDashboard() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-slate-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-full bg-[#F7FBF8] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="mx-auto max-w-7xl">
+        {/* HERO BANNER */}
+        <div className="relative mb-8 overflow-hidden rounded-[28px] border border-[#DDEDE4] bg-gradient-to-br from-[#18352A] via-[#1F4335] to-[#18352A] p-6 text-white shadow-[0_12px_45px_rgba(24,53,42,0.08)] sm:p-8">
+          {/* Decorative ambient elements */}
+          <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-[#2E7D5B]/20 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-16 -left-16 h-56 w-56 rounded-full bg-[#2E7D5B]/15 blur-2xl" />
 
-        {/* =====================================================
-            HEADER BANNER
-        ====================================================== */}
-        <div className="rounded-3xl border border-slate-200 bg-gradient-to-r from-[#172B3A] via-[#1F4056] to-[#1F6F8B] p-6 text-white shadow-md md:p-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-                <Sparkles size={14} className="text-amber-300" />
-                <span>Student Innovation Portal</span>
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-[#A0D4B8] backdrop-blur-sm border border-white/10">
+                <Sparkles size={13} />
+                <span>Student Innovation Workspace</span>
               </div>
-              <h1 className="mt-3 text-2xl font-bold md:text-3xl">
-                Welcome, {user?.name || "Student"}!
+              <h1 className="mt-3 text-2xl font-black md:text-3xl text-white tracking-tight">
+                Welcome back, {user?.name || "Student Innovator"}!
               </h1>
-              <p className="mt-2 max-w-2xl text-sm text-slate-200">
-                Track your civic problem-solving projects, monitor milestone progression,
-                and collaborate directly with your university faculty lead.
+              <p className="mt-2 max-w-2xl text-xs sm:text-sm leading-6 text-[#CFE7D8]">
+                Collaborate with faculty leads, build prototypes for accepted civic problems, and document real-world impact across Jharkhand.
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={loadDashboard}
+                className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-xs font-bold text-white backdrop-blur transition hover:bg-white/20"
+                title="Refresh"
+              >
+                <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+                <span className="hidden sm:inline">Refresh</span>
+              </button>
+
               <Link
                 to="/student/projects"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[#172B3A] shadow-sm transition hover:bg-slate-100"
+                className="flex items-center gap-2 rounded-xl bg-[#2E7D5B] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:bg-[#246748]"
               >
-                <FolderGit2 size={16} />
-                My Projects
+                <span>My Projects</span>
+                <ArrowRight size={14} />
               </Link>
             </div>
           </div>
         </div>
 
-        {/* =====================================================
-            ERROR BANNER
-        ====================================================== */}
+        {/* ERROR */}
         {error && (
-          <div className="mt-6 flex items-center justify-between rounded-2xl border border-red-200 bg-red-50 p-4">
-            <div className="flex items-center gap-3">
-              <AlertCircle size={20} className="text-red-600" />
-              <p className="text-sm font-medium text-red-800">{error}</p>
-            </div>
-            <button
-              onClick={loadDashboard}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-800 transition hover:bg-red-200"
-            >
-              <RefreshCw size={14} /> Retry
-            </button>
+          <div className="mb-6">
+            <AlertBanner
+              type="error"
+              message={error}
+              onRetry={loadDashboard}
+              onDismiss={() => setError("")}
+            />
           </div>
         )}
 
-        {/* =====================================================
-            STATISTICS
-        ====================================================== */}
-        <div className="mt-8">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-            Project Overview
-          </h2>
-          <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard
-              title="Total Assigned Projects"
-              value={stats.totalProjects}
-              subtitle="All innovation projects assigned to you"
-              icon={FolderGit2}
-              color="bg-blue-50 text-blue-600"
-              linkTo="/student/projects"
-            />
-            <StatCard
-              title="Active Projects"
-              value={stats.activeProjects}
-              subtitle="Currently in development or testing"
-              icon={Activity}
-              color="bg-amber-50 text-amber-600"
-              linkTo="/student/projects?status=active"
-            />
-            <StatCard
-              title="Testing / Pilot"
-              value={(stats.testingProjects || 0) + (stats.pilotProjects || 0)}
-              subtitle={`${stats.testingProjects || 0} Testing · ${stats.pilotProjects || 0} Pilot`}
-              icon={FlaskConical}
-              color="bg-purple-50 text-purple-600"
-              linkTo="/student/projects?status=Testing"
-            />
-            <StatCard
-              title="Completed Projects"
-              value={stats.completedProjects}
-              subtitle="Successfully deployed civic solutions"
-              icon={CheckCircle2}
-              color="bg-emerald-50 text-emerald-600"
-              linkTo="/student/projects?status=Completed"
-            />
-          </div>
+        {/* STATS (4 columns) */}
+        <div className="mb-8 grid grid-cols-2 gap-3.5 sm:grid-cols-4">
+          <StatCard
+            icon={<FolderGit2 size={18} />}
+            label="Assigned Projects"
+            value={stats.totalProjects}
+            color="green"
+            onClick={() => navigate("/student/projects")}
+          />
+          <StatCard
+            icon={<Activity size={18} />}
+            label="In Progress / Active"
+            value={stats.activeProjects}
+            color="green"
+            onClick={() => navigate("/student/projects")}
+          />
+          <StatCard
+            icon={<FlaskConical size={18} />}
+            label="Testing Phase"
+            value={stats.testingProjects}
+            color="orange"
+            onClick={() => navigate("/student/projects")}
+          />
+          <StatCard
+            icon={<CheckCircle2 size={18} />}
+            label="Completed"
+            value={stats.completedProjects}
+            color="green"
+            onClick={() => navigate("/student/projects")}
+          />
         </div>
 
-        {/* =====================================================
-            QUICK ACTIONS
-        ====================================================== */}
-        <div className="mt-8">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-            Quick Actions
-          </h2>
-          <div className="mt-3 grid gap-4 sm:grid-cols-3">
-            <button
-              onClick={() => navigate("/student/projects")}
-              className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-[#1F6F8B] hover:shadow-md"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                  <FolderGit2 size={20} />
-                </div>
-                <div>
-                  <p className="font-semibold text-[#172B3A]">All My Projects</p>
-                  <p className="text-xs text-slate-500">Browse all assignments</p>
-                </div>
-              </div>
-              <ArrowRight size={18} className="text-slate-400" />
-            </button>
-
-            <button
-              onClick={() => navigate("/student/projects?status=active")}
-              className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-[#1F6F8B] hover:shadow-md"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-                  <Activity size={20} />
-                </div>
-                <div>
-                  <p className="font-semibold text-[#172B3A]">Active Projects</p>
-                  <p className="text-xs text-slate-500">In-progress work</p>
-                </div>
-              </div>
-              <ArrowRight size={18} className="text-slate-400" />
-            </button>
-
-            <button
-              onClick={() => navigate("/student/projects?status=Completed")}
-              className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-[#1F6F8B] hover:shadow-md"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-                  <CheckCircle2 size={20} />
-                </div>
-                <div>
-                  <p className="font-semibold text-[#172B3A]">Completed Projects</p>
-                  <p className="text-xs text-slate-500">Finished solutions</p>
-                </div>
-              </div>
-              <ArrowRight size={18} className="text-slate-400" />
-            </button>
-          </div>
-        </div>
-
-        {/* =====================================================
-            RECENT PROJECTS
-        ====================================================== */}
-        <div className="mt-10">
-          <div className="flex items-center justify-between">
+        {/* RECENT ASSIGNED PROJECTS */}
+        <div className="rounded-[28px] border border-[#DDEDE4] bg-white p-6 sm:p-7 shadow-[0_8px_30px_rgba(24,53,42,0.045)]">
+          <div className="mb-5 flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-[#172B3A]">
-                Recently Assigned Projects
+              <h2 className="text-lg font-extrabold text-[#18352A]">
+                Recent Assigned Projects
               </h2>
-              <p className="text-xs text-slate-500">
-                Latest civic problem solutions assigned to your team
+              <p className="text-xs text-[#789087]">
+                Civic innovation initiatives you are currently assigned to
               </p>
             </div>
-            {recentProjects.length > 0 && (
-              <Link
-                to="/student/projects"
-                className="inline-flex items-center gap-1 text-sm font-semibold text-[#1F6F8B] hover:underline"
-              >
-                View all ({stats.totalProjects}) <ArrowRight size={14} />
-              </Link>
-            )}
+
+            <Link
+              to="/student/projects"
+              className="text-xs font-bold text-[#2E7D5B] hover:underline inline-flex items-center gap-1"
+            >
+              View All Projects
+              <ArrowRight size={13} />
+            </Link>
           </div>
 
           {loading ? (
-            <div className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="animate-pulse rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-                >
-                  <div className="h-5 w-24 rounded-full bg-slate-200" />
-                  <div className="mt-4 h-6 w-3/4 rounded bg-slate-200" />
-                  <div className="mt-3 h-16 rounded bg-slate-100" />
-                  <div className="mt-4 h-4 w-1/2 rounded bg-slate-200" />
-                </div>
-              ))}
-            </div>
+            <LoadingState cards={2} />
           ) : recentProjects.length === 0 ? (
-            <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-                <FolderGit2 size={32} />
+            <div className="rounded-2xl border border-dashed border-[#DDEDE4] bg-[#FAFDFB] p-8 text-center">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF7F0] text-[#2E7D5B]">
+                <FolderGit2 size={24} />
               </div>
-              <h3 className="mt-4 text-lg font-bold text-[#172B3A]">
-                No Assigned Projects Yet
-              </h3>
-              <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">
-                You have not been assigned to any civic innovation projects yet. Once your university administrators assign you as a student team member, your projects will appear here.
+              <p className="text-sm font-extrabold text-[#18352A]">
+                No projects assigned to you yet
+              </p>
+              <p className="mt-1 text-xs text-[#667A70]">
+                When your university faculty assigns you to an innovation project, it will appear here.
               </p>
             </div>
           ) : (
-            <div className="mt-4 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {recentProjects.map((project) => {
-                const problem = project.problem || {};
                 const accepted = isAcceptedByMe(project);
+                const facultyName =
+                  project.facultyLead?.name ||
+                  project.facultyLead?.email ||
+                  "Faculty Lead Unassigned";
 
                 return (
                   <div
                     key={project._id}
-                    className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-md"
+                    onClick={() => navigate(`/student/projects/${project._id}`)}
+                    className="group flex cursor-pointer flex-col justify-between rounded-[22px] border border-[#DDEDE4] border-l-4 border-l-[#2E7D5B] bg-white p-5 shadow-[0_4px_18px_rgba(24,53,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(24,53,42,0.08)]"
                   >
                     <div>
-                      {/* Status & Assignment Status */}
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span
-                          className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getStatusBadge(
-                            project.status
-                          )}`}
-                        >
-                          {project.status || "Planning"}
-                        </span>
+                      {/* Status row */}
+                      <div className="flex items-center justify-between gap-2">
+                        <StatusBadge status={project.status || "Planning"} size="sm" />
 
                         {accepted ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
-                            <CheckCircle2 size={12} /> Accepted
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[#EAF7F0] border border-[#CBE8D7] px-2.5 py-0.5 text-[10px] font-bold text-[#246748]">
+                            <UserCheck size={11} />
+                            Accepted
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700 border border-amber-200">
-                            <Clock size={12} /> New Assignment
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[#FFF6E5] border border-[#F6D99D] px-2.5 py-0.5 text-[10px] font-bold text-[#A46308]">
+                            <Clock size={11} />
+                            Invitation Pending
                           </span>
                         )}
                       </div>
 
-                      {/* Project Title */}
-                      <h3 className="mt-4 line-clamp-2 text-base font-bold text-[#172B3A]">
+                      {/* Title */}
+                      <h3 className="mt-3 text-base font-extrabold text-[#18352A] transition group-hover:text-[#2E7D5B] line-clamp-1">
                         {project.title}
                       </h3>
 
-                      {/* Problem Reference */}
-                      <div className="mt-3 rounded-xl bg-slate-50 p-3 border border-slate-100">
-                        <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                          Source Problem
+                      {/* Problem tag */}
+                      {project.problem?.title && (
+                        <p className="mt-1 text-xs font-semibold text-[#789087] truncate">
+                          Problem: {project.problem.title}
                         </p>
-                        <p className="mt-1 line-clamp-1 text-xs font-medium text-slate-700">
-                          {problem.title || "Civic Grievance"}
+                      )}
+
+                      {/* Description */}
+                      <p className="mt-2 text-xs leading-5 text-[#667A70] line-clamp-2">
+                        {project.description || "No project description provided."}
+                      </p>
+
+                      {/* Faculty info */}
+                      <div className="mt-4 rounded-xl border border-[#EDF4F0] bg-[#FAFDFB] p-2.5">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#789087]">
+                          Faculty Mentor
                         </p>
-                      </div>
-
-                      {/* Details Meta */}
-                      <div className="mt-4 space-y-2 text-xs text-slate-600">
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400">Category</span>
-                          <span className="font-medium text-slate-700">
-                            {project.category || problem.category || "General"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400">District</span>
-                          <span className="font-medium text-slate-700">
-                            {project.district || problem.district || "Jharkhand"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400">University</span>
-                          <span className="font-medium text-slate-700 truncate max-w-[160px]">
-                            {project.university?.name || "Assigned University"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400">Faculty Lead</span>
-                          <span className="font-medium text-slate-700">
-                            {project.facultyLead?.name || "Not assigned"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-[11px]">
-                          <span className="text-slate-400">Assigned Date</span>
-                          <span className="text-slate-500">
-                            {project.createdAt
-                              ? new Date(project.createdAt).toLocaleDateString("en-IN", {
-                                  day: "numeric",
-                                  month: "short",
-                                  year: "numeric",
-                                })
-                              : "Recently"}
-                          </span>
-                        </div>
+                        <p className="mt-0.5 text-xs font-bold text-[#18352A] truncate">
+                          {facultyName}
+                        </p>
                       </div>
                     </div>
 
-                    {/* View Button */}
-                    <div className="mt-5 pt-4 border-t border-slate-100">
-                      <Link
-                        to={`/student/projects/${project._id}`}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#172B3A] py-2.5 text-xs font-semibold text-white transition hover:bg-[#23445A]"
-                      >
-                        View Project <ArrowRight size={14} />
-                      </Link>
+                    <div className="mt-4 border-t border-[#EDF4F0] pt-3 flex items-center justify-between">
+                      <span className="text-[11px] font-semibold text-[#789087]">
+                        {project.students?.length || 1} Team Member{(project.students?.length || 1) === 1 ? "" : "s"}
+                      </span>
+
+                      <span className="text-xs font-extrabold text-[#2E7D5B] group-hover:underline inline-flex items-center gap-1">
+                        Open Project
+                        <ArrowRight size={12} />
+                      </span>
                     </div>
                   </div>
                 );
@@ -431,7 +281,6 @@ export default function StudentDashboard() {
             </div>
           )}
         </div>
-
       </div>
     </div>
   );

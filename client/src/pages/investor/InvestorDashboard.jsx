@@ -1,67 +1,26 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Briefcase,
   Building2,
   CheckCircle2,
   Clock,
-  ExternalLink,
   FolderGit2,
   Handshake,
   ArrowRight,
   Sparkles,
   Users,
-  AlertCircle,
   RefreshCw,
-  Search,
 } from "lucide-react";
 import api from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 
-const getStatusBadge = (status) => {
-  switch (status) {
-    case "Planning":
-      return "bg-slate-100 text-slate-700 border-slate-200";
-    case "Development":
-      return "bg-blue-50 text-blue-700 border-blue-200";
-    case "Testing":
-      return "bg-amber-50 text-amber-700 border-amber-200";
-    case "Pilot":
-      return "bg-purple-50 text-purple-700 border-purple-200";
-    case "Deployment":
-      return "bg-cyan-50 text-cyan-700 border-cyan-200";
-    case "Completed":
-      return "bg-emerald-50 text-emerald-700 border-emerald-200";
-    case "Cancelled":
-      return "bg-red-50 text-red-700 border-red-200";
-    default:
-      return "bg-slate-100 text-slate-700 border-slate-200";
-  }
-};
-
-const StatCard = ({ title, value, subtitle, icon: Icon, color, linkTo }) => {
-  const content = (
-    <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md">
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-          {title}
-        </p>
-        <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${color}`}>
-          <Icon size={20} />
-        </div>
-      </div>
-      <p className="mt-3 text-3xl font-bold text-[#172B3A]">{value}</p>
-      <p className="mt-1 text-xs text-slate-400">{subtitle}</p>
-      {linkTo && (
-        <div className="mt-3 flex items-center gap-1 text-xs font-medium text-[#1F6F8B] opacity-0 transition group-hover:opacity-100">
-          View details <ArrowRight size={12} />
-        </div>
-      )}
-    </div>
-  );
-
-  return linkTo ? <Link to={linkTo}>{content}</Link> : content;
-};
+import PageHeader from "../../components/ui/PageHeader";
+import StatCard from "../../components/ui/StatCard";
+import StatusBadge from "../../components/ui/StatusBadge";
+import EmptyState from "../../components/ui/EmptyState";
+import LoadingState from "../../components/ui/LoadingState";
+import AlertBanner from "../../components/ui/AlertBanner";
 
 export default function InvestorDashboard() {
   const { user } = useAuth();
@@ -107,7 +66,7 @@ export default function InvestorDashboard() {
       console.error("Investor dashboard error:", err);
       setError(
         err.response?.data?.message ||
-          "Unable to load investor dashboard. Please try again."
+        "Unable to load investor dashboard. Please try again."
       );
     } finally {
       setLoading(false);
@@ -115,300 +74,191 @@ export default function InvestorDashboard() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-slate-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-full bg-[#F7FBF8] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="mx-auto max-w-7xl">
+        {/* HERO BANNER */}
+        <div className="relative mb-8 overflow-hidden rounded-[28px] border border-[#DDEDE4] bg-gradient-to-br from-[#18352A] via-[#1F4335] to-[#18352A] p-6 text-white shadow-[0_12px_45px_rgba(24,53,42,0.08)] sm:p-8">
+          {/* Ambient decorative elements */}
+          <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-[#2E7D5B]/20 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-16 -left-16 h-56 w-56 rounded-full bg-[#2E7D5B]/15 blur-2xl" />
 
-        {/* =====================================================
-            HERO BANNER
-        ====================================================== */}
-        <div className="rounded-3xl border border-slate-200 bg-gradient-to-r from-[#172B3A] via-[#1F4056] to-[#1F6F8B] p-6 text-white shadow-md md:p-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-                <Sparkles size={14} className="text-amber-300" />
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-[#A0D4B8] backdrop-blur-sm border border-white/10">
+                <Sparkles size={13} />
                 <span>Industry & Investor Collaboration Hub</span>
               </div>
-              <h1 className="mt-3 text-2xl font-bold md:text-3xl">
+              <h1 className="mt-3 text-2xl font-black md:text-3xl text-white tracking-tight">
                 Welcome, {user?.name || "Industry Partner"}!
               </h1>
-              <p className="mt-2 max-w-2xl text-sm text-slate-200">
+              <p className="mt-2 max-w-2xl text-xs sm:text-sm leading-6 text-[#CFE7D8]">
                 Discover university-driven civic innovation projects across Jharkhand.
                 Partner with student innovators and academic researchers through mentorship,
-                technical collaboration, and pilot support.
+                technical collaboration, and pilot deployment support.
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={loadDashboard}
+                className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-xs font-bold text-white backdrop-blur transition hover:bg-white/20"
+                title="Refresh"
+              >
+                <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+                <span className="hidden sm:inline">Refresh</span>
+              </button>
+
               <Link
                 to="/investor/projects"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[#172B3A] shadow-sm transition hover:bg-slate-100"
+                className="flex items-center gap-2 rounded-xl bg-[#2E7D5B] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:bg-[#246748]"
               >
-                <Search size={16} />
-                Browse Projects
-              </Link>
-              <Link
-                to="/investor/interests"
-                className="inline-flex items-center gap-2 rounded-xl bg-white/10 border border-white/20 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
-              >
-                <Handshake size={16} />
-                My Interests
+                <span>Browse Projects</span>
+                <ArrowRight size={14} />
               </Link>
             </div>
           </div>
         </div>
 
-        {/* =====================================================
-            ERROR BANNER
-        ====================================================== */}
+        {/* ERROR */}
         {error && (
-          <div className="mt-6 flex items-center justify-between rounded-2xl border border-red-200 bg-red-50 p-4">
-            <div className="flex items-center gap-3">
-              <AlertCircle size={20} className="text-red-600" />
-              <p className="text-sm font-medium text-red-800">{error}</p>
-            </div>
-            <button
-              onClick={loadDashboard}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-800 transition hover:bg-red-200"
-            >
-              <RefreshCw size={14} /> Retry
-            </button>
+          <div className="mb-6">
+            <AlertBanner
+              type="error"
+              message={error}
+              onRetry={loadDashboard}
+              onDismiss={() => setError("")}
+            />
           </div>
         )}
 
-        {/* =====================================================
-            STATISTICS
-        ====================================================== */}
-        <div className="mt-8">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-            Partnership Portfolio
-          </h2>
-          <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <StatCard
-              title="Available Projects"
-              value={stats.availableProjects}
-              subtitle="Open for industry collaboration"
-              icon={FolderGit2}
-              color="bg-blue-50 text-blue-600"
-              linkTo="/investor/projects"
-            />
-            <StatCard
-              title="My Interested Projects"
-              value={stats.myInterestedProjects}
-              subtitle="Projects you have expressed interest in"
-              icon={Handshake}
-              color="bg-purple-50 text-purple-600"
-              linkTo="/investor/interests"
-            />
-            <StatCard
-              title="Pending Requests"
-              value={stats.pendingRequests}
-              subtitle="Under review by university"
-              icon={Clock}
-              color="bg-amber-50 text-amber-600"
-              linkTo="/investor/interests?status=Pending"
-            />
-            <StatCard
-              title="Accepted Partnerships"
-              value={stats.acceptedPartnerships}
-              subtitle="Approved by universities"
-              icon={CheckCircle2}
-              color="bg-emerald-50 text-emerald-600"
-              linkTo="/investor/interests?status=Accepted"
-            />
-            <StatCard
-              title="Supported Projects"
-              value={stats.supportedProjects}
-              subtitle="Active industry partner roles"
-              icon={Briefcase}
-              color="bg-cyan-50 text-cyan-600"
-              linkTo="/investor/projects?supported=true"
-            />
-          </div>
+        {/* STATS (4 columns) */}
+        <div className="mb-8 grid grid-cols-2 gap-3.5 sm:grid-cols-4">
+          <StatCard
+            icon={<FolderGit2 size={18} />}
+            label="Available for Support"
+            value={stats.availableProjects}
+            color="green"
+            onClick={() => navigate("/investor/projects")}
+          />
+          <StatCard
+            icon={<Briefcase size={18} />}
+            label="Expressed Interests"
+            value={stats.myInterestedProjects}
+            color="green"
+            onClick={() => navigate("/investor/interests")}
+          />
+          <StatCard
+            icon={<Clock size={18} />}
+            label="Pending Responses"
+            value={stats.pendingRequests}
+            color="orange"
+            onClick={() => navigate("/investor/interests?status=pending")}
+          />
+          <StatCard
+            icon={<Handshake size={18} />}
+            label="Active Partnerships"
+            value={stats.acceptedPartnerships}
+            color="green"
+            onClick={() => navigate("/investor/interests?status=accepted")}
+          />
         </div>
 
-        {/* =====================================================
-            QUICK ACTIONS
-        ====================================================== */}
-        <div className="mt-8">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-            Quick Actions
-          </h2>
-          <div className="mt-3 grid gap-4 sm:grid-cols-3">
-            <button
-              onClick={() => navigate("/investor/projects")}
-              className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-[#1F6F8B] hover:shadow-md"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                  <Search size={20} />
-                </div>
-                <div>
-                  <p className="font-semibold text-[#172B3A]">Browse Projects</p>
-                  <p className="text-xs text-slate-500">Explore civic innovations</p>
-                </div>
-              </div>
-              <ArrowRight size={18} className="text-slate-400" />
-            </button>
-
-            <button
-              onClick={() => navigate("/investor/interests")}
-              className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-[#1F6F8B] hover:shadow-md"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
-                  <Handshake size={20} />
-                </div>
-                <div>
-                  <p className="font-semibold text-[#172B3A]">My Interests</p>
-                  <p className="text-xs text-slate-500">Track submitted requests</p>
-                </div>
-              </div>
-              <ArrowRight size={18} className="text-slate-400" />
-            </button>
-
-            <button
-              onClick={() => navigate("/investor/projects?supported=true")}
-              className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-[#1F6F8B] hover:shadow-md"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-                  <Briefcase size={20} />
-                </div>
-                <div>
-                  <p className="font-semibold text-[#172B3A]">Supported Projects</p>
-                  <p className="text-xs text-slate-500">Active partnerships</p>
-                </div>
-              </div>
-              <ArrowRight size={18} className="text-slate-400" />
-            </button>
-          </div>
-        </div>
-
-        {/* =====================================================
-            AVAILABLE PROJECTS FOR PARTNERSHIP
-        ====================================================== */}
-        <div className="mt-10">
-          <div className="flex items-center justify-between">
+        {/* FEATURED PROJECTS FOR INDUSTRY */}
+        <div className="rounded-[28px] border border-[#DDEDE4] bg-white p-6 sm:p-7 shadow-[0_8px_30px_rgba(24,53,42,0.045)]">
+          <div className="mb-5 flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-[#172B3A]">
-                Available Projects for Collaboration
+              <h2 className="text-lg font-extrabold text-[#18352A]">
+                Featured Innovation Projects
               </h2>
-              <p className="text-xs text-slate-500">
-                Civic solutions seeking mentorship, technical collaboration, and industry partnership
+              <p className="text-xs text-[#789087]">
+                Civic prototypes ready for industry mentorship, resource grants, or deployment partnerships
               </p>
             </div>
-            {recentProjects.length > 0 && (
-              <Link
-                to="/investor/projects"
-                className="inline-flex items-center gap-1 text-sm font-semibold text-[#1F6F8B] hover:underline"
-              >
-                View all ({stats.availableProjects}) <ArrowRight size={14} />
-              </Link>
-            )}
+
+            <Link
+              to="/investor/projects"
+              className="text-xs font-bold text-[#2E7D5B] hover:underline inline-flex items-center gap-1"
+            >
+              Explore All Projects
+              <ArrowRight size={13} />
+            </Link>
           </div>
 
           {loading ? (
-            <div className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="animate-pulse rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-                >
-                  <div className="h-5 w-24 rounded-full bg-slate-200" />
-                  <div className="mt-4 h-6 w-3/4 rounded bg-slate-200" />
-                  <div className="mt-3 h-16 rounded bg-slate-100" />
-                  <div className="mt-4 h-4 w-1/2 rounded bg-slate-200" />
-                </div>
-              ))}
-            </div>
+            <LoadingState cards={2} />
           ) : recentProjects.length === 0 ? (
-            <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-                <FolderGit2 size={32} />
+            <div className="rounded-2xl border border-dashed border-[#DDEDE4] bg-[#FAFDFB] p-8 text-center">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF7F0] text-[#2E7D5B]">
+                <FolderGit2 size={24} />
               </div>
-              <h3 className="mt-4 text-lg font-bold text-[#172B3A]">
-                No Projects Available Yet
-              </h3>
-              <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">
-                There are currently no active university projects available for external industry interest. Check back soon as universities create new civic projects.
+              <p className="text-sm font-extrabold text-[#18352A]">
+                No active innovation projects listed yet
+              </p>
+              <p className="mt-1 text-xs text-[#667A70]">
+                University teams will list their prototypes here once approved by institutional faculty.
               </p>
             </div>
           ) : (
-            <div className="mt-4 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {recentProjects.map((project) => {
-                const problem = project.problem || {};
+                const universityName =
+                  project.university?.name ||
+                  project.university?.institutionName ||
+                  "Institution";
 
                 return (
                   <div
                     key={project._id}
-                    className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-md"
+                    onClick={() => navigate(`/investor/projects/${project._id}`)}
+                    className="group flex cursor-pointer flex-col justify-between rounded-[22px] border border-[#DDEDE4] border-l-4 border-l-[#2E7D5B] bg-white p-5 shadow-[0_4px_18px_rgba(24,53,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(24,53,42,0.08)]"
                   >
                     <div>
-                      {/* Category & Status */}
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span
-                          className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getStatusBadge(
-                            project.status
-                          )}`}
-                        >
-                          {project.status || "Planning"}
+                      {/* Header */}
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="rounded-lg bg-[#F0F9F3] px-2.5 py-1 text-[11px] font-bold text-[#246748]">
+                          {project.problem?.category || "Civic Tech"}
                         </span>
-
-                        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
-                          {project.category || problem.category || "General"}
-                        </span>
+                        <StatusBadge status={project.status || "Development"} size="sm" />
                       </div>
 
                       {/* Title */}
-                      <h3 className="mt-4 line-clamp-2 text-base font-bold text-[#172B3A]">
+                      <h3 className="mt-3 text-base font-extrabold text-[#18352A] transition group-hover:text-[#2E7D5B] line-clamp-1">
                         {project.title}
                       </h3>
 
+                      {/* Problem reference */}
+                      {project.problem?.title && (
+                        <p className="mt-1 text-xs font-semibold text-[#789087] truncate">
+                          Target: {project.problem.title}
+                        </p>
+                      )}
+
                       {/* Description */}
-                      <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-slate-500">
+                      <p className="mt-2 text-xs leading-5 text-[#667A70] line-clamp-2">
                         {project.description || "No project description provided."}
                       </p>
 
-                      {/* Details Meta */}
-                      <div className="mt-4 space-y-2 text-xs text-slate-600 border-t border-slate-100 pt-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400">District:</span>
-                          <span className="font-medium text-slate-700">
-                            {project.district || problem.district || "Jharkhand"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400">University:</span>
-                          <span className="font-medium text-slate-700 truncate max-w-[160px]">
-                            {project.university?.name || "University"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400">Faculty Lead:</span>
-                          <span className="font-medium text-slate-700">
-                            {project.facultyLead?.name || "Not assigned"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400">Student Team:</span>
-                          <span className="font-medium text-slate-700">
-                            {project.studentsCount} Student{project.studentsCount === 1 ? "" : "s"}
-                          </span>
-                        </div>
+                      {/* University info */}
+                      <div className="mt-4 rounded-xl border border-[#EDF4F0] bg-[#FAFDFB] p-2.5">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#789087]">
+                          Host Institution
+                        </p>
+                        <p className="mt-0.5 text-xs font-bold text-[#18352A] truncate">
+                          {universityName}
+                        </p>
                       </div>
                     </div>
 
-                    {/* View Project Button */}
-                    <div className="mt-5 pt-4 border-t border-slate-100">
-                      <Link
-                        to={`/investor/projects/${project._id}`}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#172B3A] py-2.5 text-xs font-semibold text-white transition hover:bg-[#23445A]"
-                      >
-                        View Project <ArrowRight size={14} />
-                      </Link>
+                    <div className="mt-4 border-t border-[#EDF4F0] pt-3 flex items-center justify-between">
+                      <span className="text-[11px] font-semibold text-[#789087]">
+                        {project.students?.length || 0} Student Innovators
+                      </span>
+
+                      <span className="text-xs font-extrabold text-[#2E7D5B] group-hover:underline inline-flex items-center gap-1">
+                        Review Prototype
+                        <ArrowRight size={12} />
+                      </span>
                     </div>
                   </div>
                 );
@@ -416,7 +266,6 @@ export default function InvestorDashboard() {
             </div>
           )}
         </div>
-
       </div>
     </div>
   );
