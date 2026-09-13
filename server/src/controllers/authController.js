@@ -11,6 +11,21 @@ const ALLOWED_ROLES = [
     "investor",
 ];
 
+const authCookieOptions = (req) => {
+    const forwardedProto = req.headers["x-forwarded-proto"];
+    const isHttps =
+        process.env.NODE_ENV === "production" ||
+        req.secure ||
+        forwardedProto === "https";
+
+    return {
+        httpOnly: true,
+        secure: isHttps,
+        sameSite: isHttps ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    };
+};
+
 const signup = async (req, res) => {
     try {
         const { name, email, password, phone, role, organizationId, universityId, department, district } = req.body;
@@ -116,15 +131,7 @@ const signup = async (req, res) => {
         // SET HTTP-ONLY COOKIE
         // -----------------------------
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite:
-                process.env.NODE_ENV === "production"
-                    ? "none"
-                    : "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
+        res.cookie("token", token, authCookieOptions(req));
 
         // -----------------------------
         // RESPONSE
@@ -218,12 +225,7 @@ const login = async (req, res) => {
             }
         );
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
+        res.cookie("token", token, authCookieOptions(req));
 
         return res.status(200).json({
             success: true,
@@ -271,11 +273,7 @@ const getMe = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-        res.clearCookie("token", {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        });
+        res.clearCookie("token", authCookieOptions(req));
 
         return res.status(200).json({
             success: true,
@@ -401,13 +399,7 @@ const googleLogin = async (req, res) => {
             }
         );
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite:
-                process.env.NODE_ENV === "production" ? "none" : "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
+        res.cookie("token", token, authCookieOptions(req));
 
         return res.status(200).json({
             success: true,
