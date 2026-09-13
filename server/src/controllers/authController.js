@@ -291,9 +291,10 @@ const logout = async (req, res) => {
     }
 };
 
-const googleClient = new OAuth2Client(
-    process.env.GOOGLE_CLIENT_ID
-);
+const googleClientId =
+    process.env.GOOGLE_CLIENT_ID || process.env.Google_Client_ID;
+
+const googleClient = new OAuth2Client(googleClientId);
 
 const googleLogin = async (req, res) => {
     try {
@@ -308,7 +309,7 @@ const googleLogin = async (req, res) => {
 
         const ticket = await googleClient.verifyIdToken({
             idToken: credential,
-            audience: process.env.GOOGLE_CLIENT_ID,
+            audience: googleClientId,
         });
 
         const payload = ticket.getPayload();
