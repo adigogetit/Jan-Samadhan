@@ -24,6 +24,7 @@ app.use(helmet());
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
+  "https://jan-samadhan-five.vercel.app",
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
@@ -41,9 +42,29 @@ app.use(
       }
 
       console.error("CORS blocked origin:", origin);
-      return callback(new Error("Origin not allowed by CORS"));
+
+      // Don't throw an error for blocked origins.
+      // This prevents the OPTIONS preflight from becoming HTTP 500.
+      return callback(null, false);
     },
+
     credentials: true,
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
+
+    optionsSuccessStatus: 204,
   })
 );
 
