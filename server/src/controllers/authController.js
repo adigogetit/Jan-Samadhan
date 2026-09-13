@@ -13,10 +13,12 @@ const ALLOWED_ROLES = [
 
 const authCookieOptions = (req) => {
     const forwardedProto = req.headers["x-forwarded-proto"];
+    const isForwardedHttps = typeof forwardedProto === "string" &&
+        forwardedProto.split(",")[0].trim() === "https";
     const isHttps =
         process.env.NODE_ENV === "production" ||
         req.secure ||
-        forwardedProto === "https";
+        isForwardedHttps;
 
     return {
         httpOnly: true,

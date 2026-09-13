@@ -1,15 +1,20 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import {getCurrentUser,logoutUser,} from "../services/authService";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { getCurrentUser, logoutUser, } from "../services/authService";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const authRequestId = useRef(0);
 
   const loadCurrentUser = async () => {
+    const requestId = ++authRequestId.current;
+
     try {
       const response = await getCurrentUser();
+
+      if (requestId !== authRequestId.current) return;
 
       if (response?.success && response?.user) {
         setUser(response.user);
@@ -17,9 +22,12 @@ export function AuthProvider({ children }) {
         setUser(null);
       }
     } catch (error) {
+      if (requestId !== authRequestId.current) return;
       setUser(null);
     } finally {
-      setLoading(false);
+      if (requestId === authRequestId.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -28,6 +36,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = async () => {
+    authRequestId.current += 1;
+
     try {
       await logoutUser();
     } catch (error) {
@@ -39,7 +49,10 @@ export function AuthProvider({ children }) {
 
   const value = {
     user,
-    setUser,
+    setUser: (nextUser) => {
+      authRequestId.current += 1;
+      setUser(nextUser);
+    },
     loading,
     isAuthenticated: !!user,
     logout,
