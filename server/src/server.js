@@ -21,18 +21,26 @@ connectDB();
 
 app.use(helmet());
 
-const allowedOrigins = (process.env.CLIENT_URL || "")
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  process.env.CLIENT_URL,
+].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Allow requests without an Origin header
+      // (Postman, server-to-server requests, etc.)
+      if (!origin) {
         return callback(null, true);
       }
 
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.error("CORS blocked origin:", origin);
       return callback(new Error("Origin not allowed by CORS"));
     },
     credentials: true,
